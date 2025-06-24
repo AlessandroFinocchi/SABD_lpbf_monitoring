@@ -3,25 +3,24 @@ package it.uniroma2.entities.rest;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.*;
-import java.util.Iterator;
 
 public class BatchResponse {
     private static final int WIDTH  = 500;
     private static final int HEIGHT = 500;
 
-    @Getter private final int batchId;
-    @Getter private final String printId;
-    @Getter private final int tileId;
-    @Getter private final int layer;
-    @Getter private final byte[] tif;
+    @Getter public int batchId;
+    @Getter public String printId;
+    @Getter public int tileId;
+    @Getter public int layer;
+    @Getter public byte[] tif;
+
+    public BatchResponse() {}
 
     @JsonCreator
     public BatchResponse(
@@ -35,6 +34,14 @@ public class BatchResponse {
         this.tileId = tileId;
         this.layer = layer;
         this.tif = tif;
+    }
+
+    @Override
+    public String toString() {
+        return "Batch "   + this.getBatchId() +
+                ": print"  + this.getPrintId() +
+                ", layer " + this.getLayer()   +
+                ", tile "  + this.getTileId();
     }
 
     public void saveTif() {
@@ -51,20 +58,11 @@ public class BatchResponse {
         } catch (IOException e) { System.err.println("Error saving image: " + e.getMessage()); }
     }
 
-    @Override
-    public String toString() {
-        return "Batch "   + this.getBatchId() +
-               ": print"  + this.getPrintId() +
-               ", layer " + this.getLayer()   +
-               ", tile "  + this.getTileId();
-    }
-
     public int[][] convertTiffToMatrix() throws Exception {
         int[][] matrix = new int[HEIGHT][WIDTH];
 
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(this.tif));
         Raster r = image.getData();
-
 
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
@@ -73,5 +71,24 @@ public class BatchResponse {
             }
         }
         return matrix;
+    }
+
+    public static void printMatrix(int[][] m) {
+        File outFile = new File("output.txt");
+
+        try (PrintWriter pw = new PrintWriter(outFile)) {
+            for (int[] row : m) {
+                for (int j = 0; j < row.length; j++) {
+                    pw.print(row[j]);
+                    if (j < row.length - 1) {
+                        pw.print(" ");
+                    }
+                }
+                pw.println();  // new line after each row
+            }
+            // pw.flush() is automatic at close
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

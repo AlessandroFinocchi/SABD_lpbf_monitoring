@@ -1,90 +1,62 @@
 package it.uniroma2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.uniroma2.entities.rest.BatchResponse;
-import it.uniroma2.entities.rest.BenchConfig;
-import org.msgpack.jackson.dataformat.MessagePackFactory;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Main {
-    private static final String  BENCH_API_TOKEN = "polimi-deib";
-    private static final String  BENCH_NAME      = "unoptimized";
-    private static final int     BENCH_LIMIT     = 3600;
-    private static final boolean BENCH_TEST      = false;
-
-    private static final String URL = "http://localhost:8866";
-    private static final String CONTENT_TYPE = "Content-Type";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final String APPLICATION_MSGPACK = "application/x-msgpack";
-
-    private static String getBenchId() throws Exception {
-        BenchConfig config = new BenchConfig(BENCH_API_TOKEN, BENCH_NAME, BENCH_LIMIT, BENCH_TEST);
-
-        URL apiUrl = new URL(URL + "/api/create");
-        HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
-        connection.setDoOutput(true);
-
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = config.toJson().toString().getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-            while ((responseLine = br.readLine()) != null) response.append(responseLine.trim());
-            return response.toString().replaceAll("\"", "");
-        }
-    }
-
-    private static void startBench(String benchId) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(URL + "/api/start/"+benchId).openConnection();
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(true);
-
-        if (conn.getResponseCode() != 200) throw new IOException("Failed to start the bench");
-    }
-
-    private static BatchResponse getBatch(String benchId) throws IOException {
-            URL obj = new URL(URL + "/api/next_batch/" + benchId);
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty(CONTENT_TYPE, APPLICATION_MSGPACK);
-            connection.setDoOutput(true);
-
-            if (connection.getResponseCode() == 404) return null;  // No more batches
-
-            try (InputStream in = connection.getInputStream()) {
-                byte[] response = in.readAllBytes();
-                ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
-                BatchResponse b = objectMapper.readValue(response, BatchResponse.class);
-
-                return b;
-            }
-    }
 
     public static void main(String[] args) throws Exception {
-        String benchId = getBenchId();
-        System.out.println("benchId: " + benchId);
-        startBench(benchId);
+        // Set up the Flink streaming environment
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        for(int i = 0; i < 1; i++) {
-            BatchResponse batch = getBatch(benchId);
+        // Create the data stream from the custom source
+        DataStream<BatchResponse> batches = env.addSource(new RESTSourceFunction());
 
-            int[][] M = batch.convertTiffToMatrix();
+        test(env, batches);
+//        executeQueries(env, batches);
+    }
 
-            for(int y = 0; y < M.length; y++) {
-                for(int x = 0; x < M[y].length; x++) {
-                    System.out.print(M[y][x] + ", ");
-                }
-                System.out.println();
-            }
+    private static void executeQueries(StreamExecutionEnvironment env, DataStream<BatchResponse> batches) throws Exception {
+//        // Query 1
+//        Query1 query1 = new Query1(batches);
+//        DataStream<Query1Response> query1ResponseDataStream =query1.run();
+//
+//        // Query 2
+//        Query2 query2 = new Query2(query1ResponseDataStream);
+//        DataStream<Query2Response> query2ResponseDataStream =query2.run();
+//
+//        env.execute("Flink L-PBF job");
+    }
 
-        }
+    private static void test(StreamExecutionEnvironment env, DataStream<BatchResponse> batches) throws Exception {
+        // A queue to keep track of the last 10 values
+        SingleOutputStreamOperator<Integer> movingAverageStream = batches
+                .map((MapFunction<BatchResponse, Integer>) value -> value.getLayer()*16+value.getTileId())
+                .countWindowAll(10)
+                .reduce((value1, value2) -> {
+                    // Keep the last 10 values in the queue
+                    Queue<Integer> valuesQueue = new LinkedList<>();
+                    valuesQueue.add(value1);
+                    valuesQueue.add(value2);
+
+                    // Calculate average of the last 10 values
+                    double sum = 0;
+                    for (Integer val : valuesQueue) {
+                        sum += val;
+                    }
+                    return (int) (sum / valuesQueue.size());
+                });
+
+        // Print the computed average to the console
+        movingAverageStream.print();
+
+        // Execute the Flink job
+        env.execute("Flink Moving Average Application");
     }
 }
