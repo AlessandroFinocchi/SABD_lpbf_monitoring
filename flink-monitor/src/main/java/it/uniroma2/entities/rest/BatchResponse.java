@@ -2,17 +2,26 @@ package it.uniroma2.entities.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.io.*;
+import java.util.Iterator;
 
 public class BatchResponse {
-    private final int batchId;
-    private final String printId;
-    private final int tileId;
-    private final int layer;
-    private final byte[] tif;
+    private static final int WIDTH  = 500;
+    private static final int HEIGHT = 500;
+
+    @Getter private final int batchId;
+    @Getter private final String printId;
+    @Getter private final int tileId;
+    @Getter private final int layer;
+    @Getter private final byte[] tif;
 
     @JsonCreator
     public BatchResponse(
@@ -26,26 +35,6 @@ public class BatchResponse {
         this.tileId = tileId;
         this.layer = layer;
         this.tif = tif;
-    }
-
-    public int getBatchId() {
-        return batchId;
-    }
-
-    public String getPrintId() {
-        return printId;
-    }
-
-    public int getTileId() {
-        return tileId;
-    }
-
-    public int getLayer() {
-        return layer;
-    }
-
-    public byte[] getTif() {
-        return tif;
     }
 
     public void saveTif() {
@@ -66,7 +55,23 @@ public class BatchResponse {
     public String toString() {
         return "Batch "   + this.getBatchId() +
                ": print"  + this.getPrintId() +
-               ", layer " + this.getLayer() +
+               ", layer " + this.getLayer()   +
                ", tile "  + this.getTileId();
+    }
+
+    public int[][] convertTiffToMatrix() throws Exception {
+        int[][] matrix = new int[HEIGHT][WIDTH];
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(this.tif));
+        Raster r = image.getData();
+
+
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                int pixelValue = r.getSample(x, y, 0);
+                matrix[y][x] = pixelValue;
+            }
+        }
+        return matrix;
     }
 }
