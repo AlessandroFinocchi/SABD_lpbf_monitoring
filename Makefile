@@ -1,13 +1,10 @@
 .PHONY: q gen clean
 
 q:
-	#docker exec jobmanager ls -l /flink-monitor-jar
 	docker exec jobmanager /opt/flink/bin/flink run /flink-monitor-jar/flink-monitor-1.0-SNAPSHOT.jar
-	#docker exec jobmanager cat /opt/flink/log/flink--client-jobmanager.log
-	#docker exec jobmanager cat /opt/flink/log/flink--standalonesession-0-jobmanager.log
-
 
 gen:
+	mvn clean package
 	docker image load -i micro-challenger/gc25cdocker.tar
 	docker compose -p sabd up -d
 
