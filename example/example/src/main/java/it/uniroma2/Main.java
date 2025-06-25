@@ -35,7 +35,25 @@ public class Main {
         System.out.println(b);
     }
 
+    public static void query1() throws Exception {
+        // Set up the Flink streaming environment
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+        RESTSource httpSource = new RESTSource();
+        DataStream<Integer> batches = env.fromSource(
+                        httpSource,
+                        WatermarkStrategy.noWatermarks(),
+                        "HTTP-Integer-Source"
+                )
+                .setParallelism(1)
+                .uid("HttpIntegerSourceUID");
+
+        batches.print();
+
+        env.execute("L-PBF Monitoring Job");
+    }
+
     public static void main(String[] args) throws Exception {
-        testFlink();
+        query1();
     }
 }
