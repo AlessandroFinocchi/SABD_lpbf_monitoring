@@ -2,7 +2,6 @@ package it.uniroma2.entities.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -13,11 +12,31 @@ public class BatchResponse {
     private static final int WIDTH  = 500;
     private static final int HEIGHT = 500;
 
-    @Getter public int batchId;
-    @Getter public String printId;
-    @Getter public int tileId;
-    @Getter public int layer;
-    @Getter public byte[] tif;
+    public int batchId;
+    public String printId;
+    public int tileId;
+    public int layer;
+    public byte[] tif;
+
+    public int getBatchId() {
+        return batchId;
+    }
+
+    public String getPrintId() {
+        return printId;
+    }
+
+    public int getTileId() {
+        return tileId;
+    }
+
+    public int getLayer() {
+        return layer;
+    }
+
+    public byte[] getTif() {
+        return tif;
+    }
 
 
     @JsonCreator

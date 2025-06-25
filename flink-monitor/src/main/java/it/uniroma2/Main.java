@@ -1,5 +1,6 @@
 package it.uniroma2;
 
+import it.uniroma2.controllers.GcRestController;
 import it.uniroma2.entities.rest.BatchResponse;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -12,13 +13,14 @@ import java.util.Queue;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        // Set up the Flink streaming environment
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
-        // Create the data stream from the custom source
-        DataStream<BatchResponse> batches = env.addSource(new RESTSourceFunction());
-
-        test(env, batches);
+        testRest();
+//        // Set up the Flink streaming environment
+//        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//
+//        // Create the data stream from the custom source
+//        DataStream<BatchResponse> batches = env.addSource(new RESTSourceFunction());
+//
+//        test(env, batches);
 //        executeQueries(env, batches);
     }
 
@@ -58,5 +60,13 @@ public class Main {
 
         // Execute the Flink job
         env.execute("Flink Moving Average Application");
+    }
+
+    private static void testRest() throws Exception {
+        String benchId = GcRestController.getBenchId();
+        GcRestController.startBench(benchId);
+
+        BatchResponse b = GcRestController.getBatch(benchId);
+        System.out.println(b);
     }
 }
