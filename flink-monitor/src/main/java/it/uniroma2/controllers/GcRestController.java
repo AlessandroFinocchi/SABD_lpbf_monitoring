@@ -1,7 +1,7 @@
 package it.uniroma2.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.uniroma2.entities.rest.BatchResponse;
+import it.uniroma2.entities.rest.RESTResponse;
 import it.uniroma2.entities.rest.BenchConfig;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
@@ -16,6 +16,7 @@ public class GcRestController {
     private static final boolean BENCH_TEST      = false;
 
     private static final String URL = "http://localhost:8866";
+//    private static final String URL = "http://micro-challenger:8866";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_MSGPACK = "application/x-msgpack";
@@ -50,7 +51,7 @@ public class GcRestController {
         if (conn.getResponseCode() != 200) throw new IOException("Failed to start the bench");
     }
 
-    public static BatchResponse getBatch(String benchId) throws IOException {
+    public static RESTResponse getBatch(String benchId) throws IOException {
         URL obj = new URL(URL + "/api/next_batch/" + benchId);
         HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
         connection.setRequestMethod("GET");
@@ -62,7 +63,7 @@ public class GcRestController {
         try (InputStream in = connection.getInputStream()) {
             byte[] response = in.readAllBytes();
             ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
-            BatchResponse b = objectMapper.readValue(response, BatchResponse.class);
+            RESTResponse b = objectMapper.readValue(response, RESTResponse.class);
             return b;
         }
     }

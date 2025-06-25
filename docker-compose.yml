@@ -1,11 +1,31 @@
 services:
+  micro-challenger:
+    container_name: micro-challenger
+    hostname: micro-challenger
+    image: micro-challenger:latest
+    ports:
+      - "8866:8866"
+    volumes:
+      - ./micro-challenger/data:/data
+    command: [ "0.0.0.0:8866", "/data" ]
+    restart: unless-stopped
+    networks: # networks to connect
+      flink_network: # the name of the network
+        ipv4_address: 10.0.0.9 # static ip of the container
+
   jobmanager:
     container_name: jobmanager
     hostname: jobmanager
     build:
       context: ./flink-monitor   # relative path to the Nifi Dockerfile
+    depends_on:
+      - micro-challenger
     ports:
       - "8082:8082"
+    volumes:
+      - type: bind
+        source: ./flink-monitor/target
+        target: /flink-monitor-jar
     command: jobmanager
     environment:
       - |
@@ -14,9 +34,9 @@ services:
         parallelism.default: ${FLINK_PARALLELISM_DEFAULT}
         rest.address: ${JOBMANAGER_REST_ADDR}
         rest.port: ${JOBMANAGER_REST_PORT}
-#    networks: # networks to connect
-#      flink_network: # the name of the network
-#        ipv4_address: 10.0.0.10 # static ip of the container
+    networks: # networks to connect
+      flink_network: # the name of the network
+        ipv4_address: 10.0.0.10 # static ip of the container
 
   taskmanager:
     build:
@@ -30,13 +50,13 @@ services:
         jobmanager.rpc.address: ${TASKMANAGER_RPC_ADDRESS}
         taskmanager.numberOfTaskSlots: ${TASKMANAGER_NUMBER_OF_TASK_SLOTS}
         parallelism.default: ${FLINK_PARALLELISM_DEFAULT}
-#    networks: # networks to connect
-#      flink_network: # the name of the network
+    networks: # networks to connect
+      flink_network: # the name of the network
 
-#networks:
-#  flink_network:
-#    driver: bridge
-#    ipam:
-#      config:
-#        - subnet: 10.0.0.0/24
-#          gateway: 10.0.0.254
+networks:
+  flink_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.254

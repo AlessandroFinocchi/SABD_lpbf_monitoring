@@ -1,14 +1,14 @@
-//package it.uniroma2.controllers.flink;
+package it.uniroma2.controllers.flink;//package it.uniroma2.controllers.flink;
 //
 //import it.uniroma2.entities.query.Query1Response;
-//import it.uniroma2.entities.rest.BatchResponse;
+//import it.uniroma2.entities.rest.RESTResponse;
 //import org.apache.flink.api.common.functions.FlatMapFunction;
 //import org.apache.flink.streaming.api.datastream.DataStream;
 //import org.apache.flink.util.Collector;
 //
-//public class Query1 extends AbstractQuery<BatchResponse> {
+//public class Query1 extends AbstractQuery<RESTResponse> {
 //
-//    public Query1(DataStream<BatchResponse> dataStream) {
+//    public Query1(DataStream<RESTResponse> dataStream) {
 //        super(dataStream);
 //    }
 //
