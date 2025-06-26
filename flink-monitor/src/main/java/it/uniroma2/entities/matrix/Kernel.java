@@ -12,7 +12,7 @@ public class Kernel implements Serializable {
     public static int MAX_DEPTH = 2;
 
     public static int TOTAL_NEAR_NEIGHBOURS = getTotalByDistance(NEAR_DISTANCE_AT_0, MAX_DEPTH);
-    public static int TOTAL_FAR_NEIGHBOURS = getTotalByDistance(FAR_DISTANCE_AT_0, MAX_DEPTH);
+    public static int TOTAL_FAR_NEIGHBOURS = getTotalByDistance(FAR_DISTANCE_AT_0, MAX_DEPTH) - TOTAL_NEAR_NEIGHBOURS;
 
     double[][] values;
     int halfSize;

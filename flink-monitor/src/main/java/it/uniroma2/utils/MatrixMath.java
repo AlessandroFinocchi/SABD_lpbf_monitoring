@@ -63,6 +63,16 @@ public class MatrixMath {
         return result;
     }
 
+    public static int[][] absMatrix(int[][] a) {
+        int[][] result = new int[a.length][a.length];
+        for (int x = 0; x < a.length; x++) {
+            for (int y = 0; y < a.length; y++) {
+                result[x][y] = Math.abs(a[x][y]);
+            }
+        }
+        return result;
+    }
+
     public static int manhattanDistance(int ax, int ay, int bx, int by) {
         return Math.abs(ax - bx) + Math.abs(ay - by);
     }
@@ -85,14 +95,6 @@ public class MatrixMath {
 
         for (int ix = 0; ix < input.length; ix++) {
             for (int iy = 0; iy < input.length; iy++) {
-
-                // If 0 (under EMPTY_THRESHOLD) or -1 (over SATURATION_THRESHOLD), then skip
-                if (input[ix][iy] <= 0) {
-                    output[ix][iy] = input[ix][iy];
-                    continue;
-                }
-
-                // If valid point, then compute the convolution only on other valid points
                 double sum = 0;
                 for (int kx = 0; kx < kernel.length; kx++) {
                     for (int ky = 0; ky < kernel.length; ky++) {
@@ -101,8 +103,7 @@ public class MatrixMath {
                         int y = iy + ky - halfSize;
                         // Padding
                         int cell = ((x < 0) || (x >= input.length) || (y < 0) || (y >= input.length)) ? 0 : input[x][y];
-                        // Skip padding, under EMPTY_THRESHOLD and over SATURATION_THRESHOLD even in computation of valid points
-                        if (cell <= 0) continue;
+                        cell = Math.max(cell, 0);
                         sum += ((double) cell * kernel[kx][ky]);
                     }
                 }

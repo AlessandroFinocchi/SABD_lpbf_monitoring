@@ -63,7 +63,7 @@ public class Main {
         // saturationTiles.print();
 
         // Query 2
-        Query2Naive query2 = new Query2Naive(saturationTiles);
+        Query2 query2 = new Query2(saturationTiles);
         DataStream<TileQ2> query2ResponseDataStream = query2.run();
 
 

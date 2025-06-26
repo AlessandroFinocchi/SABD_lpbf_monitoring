@@ -66,27 +66,20 @@ public class Query2 extends AbstractQuery<TileQ1> {
 
                             if (result == null) {
                                 result = new TileQ2(subTileQ2.getSize(), subTileQ2.getPrintID(), subTileQ2.getTileID());
+                                result.setValues(new int[subTileQ2.getSize()][subTileQ2.getSize()]);
                             }
 
                             if (subTileQ2.getDepth() == 0) {
                                 result.setSeqID(subTileQ2.getSeqID());
                                 result.setLayerID(subTileQ2.getLayerID());
                                 result.setSaturatedPoints(subTileQ2.getSaturatedPoints());
+                                result.setBaseValues(subTileQ2.getBaseValues());
                             }
 
-                            int[][] summedValues = MatrixMath.addMatrix(result.getValues(), subTileQ2.getValues());
-                            result.setValues(summedValues);
+                            result.setValues(MatrixMath.addMatrix(result.getValues(), subTileQ2.getValues()));
                         }
                         // Make the difference values absolute
-                        int[][] absValues = result.getValues();
-
-                        for (int x = 0; x < result.getSize(); x++) {
-                            for (int y = 0; y < result.getSize(); y++) {
-                                if (absValues[x][y] < 0) {
-                                    absValues[x][y] = -absValues[x][y];
-                                }
-                            }
-                        }
+                        result.setValues(MatrixMath.absMatrix(result.getValues()));
                         collector.collect(result);
                     }
                 })
@@ -94,8 +87,14 @@ public class Query2 extends AbstractQuery<TileQ1> {
                     @Override
                     public TileQ2 map(TileQ2 tileQ2) throws Exception {
                         int[][] values = tileQ2.getValues();
+                        int[][] baseValues = tileQ2.getBaseValues();
+
                         for (int x = 0; x < tileQ2.getSize(); x++) {
                             for (int y = 0; y < tileQ2.getSize(); y++) {
+                                if (baseValues[x][y] <= Query1.EMPTY_THRESHOLD ||
+                                        baseValues[x][y] >= Query1.SATURATION_THRESHOLD)
+                                    continue;
+
                                 if (values[x][y] >= DEVIATION_THRESHOLD) {
                                     tileQ2.addOutlier(new Outlier(x, y, values[x][y]));
                                 }
@@ -106,7 +105,6 @@ public class Query2 extends AbstractQuery<TileQ1> {
                 });
 
         combinedTiles.print();
-
 
         return combinedTiles;
     }
@@ -124,11 +122,16 @@ public class Query2 extends AbstractQuery<TileQ1> {
         @Override
         public SubTileQ2 map(TileQ1 tileQ1) throws Exception {
             SubTileQ2 outputSQ2 = new SubTileQ2(tileQ1);
+
             outputSQ2.setDepth(this.depth);
-            int[][] convInput = outputSQ2.getValues();
+
+            if (this.depth == 0) outputSQ2.setBaseValues(tileQ1.getValues());
+
+            int[][] convInput = tileQ1.getValues();
             double[][] convKernel = this.kernel.getValues();
             int[][] convolutionResult = MatrixMath.convolutionPadded(convInput, convKernel);
             outputSQ2.setValues(convolutionResult);
+
             return outputSQ2;
         }
     }

@@ -8,6 +8,7 @@ public class TileQ2 extends TileQ1 {
 
     protected int seqID;
     protected int layerID;
+    protected int[][] baseValues;
     protected List<Outlier> outliers;
 
     // Copy constructor pattern
@@ -27,6 +28,14 @@ public class TileQ2 extends TileQ1 {
 
     public void setLayerID(int layerID) {
         this.layerID = layerID;
+    }
+
+    public int[][] getBaseValues() {
+        return baseValues;
+    }
+
+    public void setBaseValues(int[][] baseValues) {
+        this.baseValues = baseValues;
     }
 
     public List<Outlier> getOutliers() {

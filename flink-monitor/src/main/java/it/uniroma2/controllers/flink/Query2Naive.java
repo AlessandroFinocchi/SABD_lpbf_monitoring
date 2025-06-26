@@ -55,8 +55,8 @@ public class Query2Naive extends AbstractQuery<TileQ1> {
                     @Override
                     public void apply(Tuple2<Integer, Integer> key, GlobalWindow globalWindow, Iterable<SubTileQ2> iterable, Collector<TileQ2> collector) throws Exception {
                         TileQ2 result = null;
-                        int[][][] stacked = new int[0][0][0];
-                        int[][] values = new int[0][0];
+                        int[][][] stacked = null;
+                        int[][] values = null;
 
                         for (SubTileQ2 subTileQ2 : iterable) {
                             // System.out.println(String.format("Processing key %s: tile %d, layer %d, depth %d",

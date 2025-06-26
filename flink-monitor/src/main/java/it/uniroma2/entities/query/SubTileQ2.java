@@ -4,6 +4,7 @@ import it.uniroma2.utils.MatrixMath;
 
 public class SubTileQ2 extends TileQ1 {
     protected int depth;
+    private int[][] baseValues;
 
     public SubTileQ2(TileQ1 parent) {
         super(parent.size, parent.seqID, parent.printID, parent.layerID, parent.tileID, parent.values, parent.saturatedPoints);
@@ -15,6 +16,14 @@ public class SubTileQ2 extends TileQ1 {
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    public int[][] getBaseValues() {
+        return baseValues;
+    }
+
+    public void setBaseValues(int[][] baseValues) {
+        this.baseValues = baseValues;
     }
 
     @Override
