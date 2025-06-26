@@ -6,10 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class RESTResponse {
-    private static final int WIDTH  = 500;
+    private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
 
     public int batchId;
@@ -17,6 +20,24 @@ public class RESTResponse {
     public int tileId;
     public int layer;
     public byte[] tif;
+
+    @JsonCreator
+    public RESTResponse(
+            @JsonProperty("batch_id") int batchId,
+            @JsonProperty("print_id") String printId,
+            @JsonProperty("tile_id") int tileId,
+            @JsonProperty("layer") int layer,
+            @JsonProperty("tif") byte[] tif) {
+        this.batchId = batchId;
+        this.printId = printId;
+        this.tileId = tileId;
+        this.layer = layer;
+        this.tif = tif;
+    }
+
+    public int getSize() {
+        return WIDTH;
+    }
 
     public int getBatchId() {
         return batchId;
@@ -38,33 +59,18 @@ public class RESTResponse {
         return tif;
     }
 
-
-    @JsonCreator
-    public RESTResponse(
-            @JsonProperty("batch_id") int batchId,
-            @JsonProperty("print_id") String printId,
-            @JsonProperty("tile_id") int tileId,
-            @JsonProperty("layer") int layer,
-            @JsonProperty("tif") byte[] tif) {
-        this.batchId = batchId;
-        this.printId = printId;
-        this.tileId = tileId;
-        this.layer = layer;
-        this.tif = tif;
-    }
-
     @Override
     public String toString() {
-        return "Batch "   + this.getBatchId() +
-                ": print"  + this.getPrintId() +
-                ", layer " + this.getLayer()   +
-                ", tile "  + this.getTileId();
+        return "Batch " + this.getBatchId() +
+                ": print" + this.getPrintId() +
+                ", layer " + this.getLayer() +
+                ", tile " + this.getTileId();
     }
 
     public void saveTif() {
         String filePath =
-                        "layer" + this.getLayer() +
-                        "tile"  + this.getTileId()+
+                "layer" + this.getLayer() +
+                        "tile" + this.getTileId() +
                         ".tif";
         try {
             File file = new File(filePath);
@@ -72,7 +78,9 @@ public class RESTResponse {
                 fos.write(this.getTif());
                 System.out.println("Image saved to " + filePath);
             }
-        } catch (IOException e) { System.err.println("Error saving image: " + e.getMessage()); }
+        } catch (IOException e) {
+            System.err.println("Error saving image: " + e.getMessage());
+        }
     }
 
     public int[][] convertTiffToMatrix() throws Exception {
@@ -88,24 +96,5 @@ public class RESTResponse {
             }
         }
         return matrix;
-    }
-
-    public static void printMatrix(int[][] m) {
-        File outFile = new File("output.txt");
-
-        try (PrintWriter pw = new PrintWriter(outFile)) {
-            for (int[] row : m) {
-                for (int j = 0; j < row.length; j++) {
-                    pw.print(row[j]);
-                    if (j < row.length - 1) {
-                        pw.print(" ");
-                    }
-                }
-                pw.println();  // new line after each row
-            }
-            // pw.flush() is automatic at close
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 }
