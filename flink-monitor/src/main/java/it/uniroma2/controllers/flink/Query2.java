@@ -46,7 +46,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                 })
                 .keyBy(new KeySelector<SubTileQ2, Tuple2<Integer, Integer>>() {
                     @Override
-                    public Tuple2<Integer, Integer> getKey(SubTileQ2 subTileQ2) throws Exception {
+                    public Tuple2<Integer, Integer> getKey(SubTileQ2 subTileQ2) {
                         return new Tuple2<>(subTileQ2.getLayerID() + subTileQ2.getDepth(), subTileQ2.getTileID());
                     }
                 })
@@ -54,7 +54,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                 .trigger(CountTrigger.of(WINDOW_SIZE))
                 .apply(new WindowFunction<SubTileQ2, TileQ2, Tuple2<Integer, Integer>, GlobalWindow>() {
                     @Override
-                    public void apply(Tuple2<Integer, Integer> key, GlobalWindow globalWindow, Iterable<SubTileQ2> iterable, Collector<TileQ2> collector) throws Exception {
+                    public void apply(Tuple2<Integer, Integer> key, GlobalWindow globalWindow, Iterable<SubTileQ2> iterable, Collector<TileQ2> collector) {
                         TileQ2 result = null;
 
                         for (SubTileQ2 subTileQ2 : iterable) {
@@ -85,7 +85,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                 })
                 .map(new MapFunction<TileQ2, TileQ2>() {
                     @Override
-                    public TileQ2 map(TileQ2 tileQ2) throws Exception {
+                    public TileQ2 map(TileQ2 tileQ2) {
                         int[][] values = tileQ2.getValues();
                         int[][] baseValues = tileQ2.getBaseValues();
 
@@ -120,7 +120,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
         }
 
         @Override
-        public SubTileQ2 map(TileQ1 tileQ1) throws Exception {
+        public SubTileQ2 map(TileQ1 tileQ1) {
             SubTileQ2 outputSQ2 = new SubTileQ2(tileQ1);
 
             outputSQ2.setDepth(this.depth);

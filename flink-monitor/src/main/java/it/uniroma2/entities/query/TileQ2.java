@@ -58,11 +58,11 @@ public class TileQ2 extends TileQ1 {
 
     @Override
     public String toString() {
-        String firstOrderedOutliers = "";
+        StringBuilder firstOrderedOutliers = new StringBuilder();
         for (Outlier outlier : this.getOrderedOutliers(5)) {
-            firstOrderedOutliers += String.format("(%d,%d,%d) ", outlier.x, outlier.y, outlier.value);
+            firstOrderedOutliers.append(String.format("(%d,%d,%d) ", outlier.x, outlier.y, outlier.value));
         }
-        String result = "TileQ2{" +
+        return "TileQ2{" +
                 "printID='" + printID + '\'' +
                 ", seqID=" + seqID +
                 ", layerID=" + layerID +
@@ -73,7 +73,5 @@ public class TileQ2 extends TileQ1 {
                 ", tileID=" + tileID +
                 ", firstOrderedOutliers=" + firstOrderedOutliers +
                 '}';
-        // MatrixMath.saveMatrix(values, result);
-        return result;
     }
 }

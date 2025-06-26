@@ -1,7 +1,5 @@
 package it.uniroma2.entities.query;
 
-import it.uniroma2.utils.MatrixMath;
-
 public class SubTileQ2 extends TileQ1 {
     protected int depth;
     private int[][] baseValues;

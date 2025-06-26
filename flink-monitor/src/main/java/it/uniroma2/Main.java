@@ -4,7 +4,6 @@ import it.uniroma2.boundaries.RESTSource;
 import it.uniroma2.controllers.flink.Preprocess;
 import it.uniroma2.controllers.flink.Query1;
 import it.uniroma2.controllers.flink.Query2;
-import it.uniroma2.controllers.flink.Query2Naive;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.query.TileQ2;

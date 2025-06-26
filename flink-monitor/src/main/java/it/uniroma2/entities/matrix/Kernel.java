@@ -17,10 +17,6 @@ public class Kernel implements Serializable {
     double[][] values;
     int halfSize;
 
-    public Kernel(double[][] values) {
-        this.values = values;
-    }
-
     public Kernel(int depth, boolean normalize) {
         // Compute the distance of the near and the far neighbors at a given depth
         int nearDistance = NEAR_DISTANCE_AT_0 - depth;
