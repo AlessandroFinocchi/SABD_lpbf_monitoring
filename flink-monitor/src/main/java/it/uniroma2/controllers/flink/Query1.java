@@ -19,12 +19,8 @@ public class Query1 extends AbstractQuery<Tile> {
     }
 
     /*
-     * Analyze the tile:
-     * 1. Checks for points with a temperature less than EMPTY_THRESHOLD.
-     *   When found, their temperature is set to 0.
-     * 2. Checks for points with a temperature greater or equal than SATURATION_THRESHOLD.
+     * Checks for points with a temperature greater or equal than SATURATION_THRESHOLD.
      *   When found:
-     *       2.1. Their temperature is set to -1. In this way they can be easily skipped for sequent queries.
      *       2.2. A counter in the tile is incremented by 1.
      * */
     private static class analyzeSaturationMapper implements MapFunction<Tile, TileQ1> {
@@ -35,10 +31,7 @@ public class Query1 extends AbstractQuery<Tile> {
 
             for (int x = 0; x < tile.getSize(); x++) {
                 for (int y = 0; y < tile.getSize(); y++) {
-                    if (tileValues[x][y] > 0 && tileValues[x][y] < EMPTY_THRESHOLD) {
-                        tileValues[x][y] = 0;
-                    } else if (tileValues[x][y] >= SATURATION_THRESHOLD) {
-                        tileValues[x][y] = -1;
+                    if (tileValues[x][y] >= SATURATION_THRESHOLD) {
                         tileQ1.incrementSaturatedPoints();
                     }
                 }
