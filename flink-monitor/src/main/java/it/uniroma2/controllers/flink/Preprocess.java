@@ -7,8 +7,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 
 public class Preprocess extends AbstractQuery<RESTResponse> {
 
-    public Preprocess(DataStream<RESTResponse> responseStream) {
-        super(responseStream);
+    public Preprocess(DataStream<RESTResponse> inputStream) {
+        super(inputStream);
     }
 
     // Transforms a stream of RESTResponse into a stream of Tile

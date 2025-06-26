@@ -4,6 +4,7 @@ import it.uniroma2.boundaries.RESTSource;
 import it.uniroma2.controllers.flink.Preprocess;
 import it.uniroma2.controllers.flink.Query1;
 import it.uniroma2.entities.query.Tile;
+import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.rest.RESTResponse;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -54,7 +55,7 @@ public class Main {
 
         // Query 1
         Query1 query1 = new Query1(tiles);
-        DataStream<Tile> saturationTiles = query1.run();
+        DataStream<TileQ1> saturationTiles = query1.run();
 
         saturationTiles.print();
 
