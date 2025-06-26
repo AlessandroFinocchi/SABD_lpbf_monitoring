@@ -6,6 +6,7 @@ import it.uniroma2.controllers.flink.Query1;
 import it.uniroma2.controllers.flink.Query2;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.query.TileQ1;
+import it.uniroma2.entities.query.TileQ2;
 import it.uniroma2.entities.rest.RESTResponse;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -62,7 +63,8 @@ public class Main {
 
         // Query 2
         Query2 query2 = new Query2(saturationTiles);
-        DataStream<Tile> query2ResponseDataStream = query2.run();
+        DataStream<TileQ2> query2ResponseDataStream = query2.run();
+
 
         env.execute("Flink L-PBF job");
     }

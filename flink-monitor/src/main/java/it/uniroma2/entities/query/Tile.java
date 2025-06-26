@@ -23,6 +23,22 @@ public class Tile {
         return size;
     }
 
+    public int getSeqID() {
+        return seqID;
+    }
+
+    public String getPrintID() {
+        return printID;
+    }
+
+    public int getLayerID() {
+        return layerID;
+    }
+
+    public int getTileID() {
+        return tileID;
+    }
+
     public int[][] getValues() {
         return values;
     }

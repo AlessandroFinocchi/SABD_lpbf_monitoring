@@ -18,6 +18,14 @@ public class TileQ1 extends Tile {
         this.saturatedPoints = 0;
     }
 
+    public int getSaturatedPoints() {
+        return saturatedPoints;
+    }
+
+    public void setSaturatedPoints(int saturatedPoints) {
+        this.saturatedPoints = saturatedPoints;
+    }
+
     public void incrementSaturatedPoints() {
         this.saturatedPoints++;
     }

@@ -8,4 +8,13 @@ public class Outlier {
         this.y = y;
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "Outlier{" +
+                "x=" + x +
+                ", y=" + y +
+                ", value=" + value +
+                '}';
+    }
 }

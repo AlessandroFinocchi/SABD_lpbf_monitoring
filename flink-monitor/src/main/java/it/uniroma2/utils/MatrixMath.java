@@ -53,6 +53,16 @@ public class MatrixMath {
         }
     }
 
+    public static int[][] addMatrix(int[][] a, int[][] b) {
+        int[][] result = new int[a.length][a.length];
+        for (int x = 0; x < a.length; x++) {
+            for (int y = 0; y < a.length; y++) {
+                result[x][y] = a[x][y] + b[x][y];
+            }
+        }
+        return result;
+    }
+
     public static int manhattanDistance(int ax, int ay, int bx, int by) {
         return Math.abs(ax - bx) + Math.abs(ay - by);
     }
@@ -83,19 +93,20 @@ public class MatrixMath {
                 }
 
                 // If valid point, then compute the convolution only on other valid points
-                int sum = 0;
+                double sum = 0;
                 for (int kx = 0; kx < kernel.length; kx++) {
                     for (int ky = 0; ky < kernel.length; ky++) {
+                        if (kernel[kx][ky] == 0) continue;
                         int x = ix + kx - halfSize;
                         int y = iy + ky - halfSize;
                         // Padding
                         int cell = ((x < 0) || (x >= input.length) || (y < 0) || (y >= input.length)) ? 0 : input[x][y];
                         // Skip padding, under EMPTY_THRESHOLD and over SATURATION_THRESHOLD even in computation of valid points
                         if (cell <= 0) continue;
-                        sum += (int) ((double) cell * kernel[kx][ky]);
+                        sum += ((double) cell * kernel[kx][ky]);
                     }
                 }
-                output[ix][iy] = sum;
+                output[ix][iy] = (int) sum;
             }
         }
         return output;
