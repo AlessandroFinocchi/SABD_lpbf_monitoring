@@ -3,6 +3,7 @@ package it.uniroma2;
 import it.uniroma2.boundaries.RESTSource;
 import it.uniroma2.controllers.flink.Preprocess;
 import it.uniroma2.controllers.flink.Query1;
+import it.uniroma2.controllers.flink.Query2;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.rest.RESTResponse;
@@ -57,11 +58,11 @@ public class Main {
         Query1 query1 = new Query1(tiles);
         DataStream<TileQ1> saturationTiles = query1.run();
 
-        saturationTiles.print();
+        // saturationTiles.print();
 
-        // // Query 2
-        // Query2 query2 = new Query2(query1ResponseDataStream);
-        // DataStream<Query2Response> query2ResponseDataStream = query2.run();
+        // Query 2
+        Query2 query2 = new Query2(saturationTiles);
+        DataStream<Tile> query2ResponseDataStream = query2.run();
 
         env.execute("Flink L-PBF job");
     }

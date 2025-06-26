@@ -3,8 +3,9 @@ package it.uniroma2.entities.query;
 public class TileQ1 extends Tile {
     protected int saturatedPoints;
 
-    public TileQ1(int size, int seqID, String printID, int layerID, int tileID, int[][] values) {
+    protected TileQ1(int size, int seqID, String printID, int layerID, int tileID, int[][] values, int saturatedPoints) {
         super(size, seqID, printID, layerID, tileID, values);
+        this.saturatedPoints = saturatedPoints;
     }
 
     public TileQ1(Tile tile) {
@@ -14,6 +15,7 @@ public class TileQ1 extends Tile {
               tile.layerID,
               tile.tileID,
               tile.values);
+        this.saturatedPoints = 0;
     }
 
     public void incrementSaturatedPoints() {

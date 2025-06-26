@@ -8,7 +8,7 @@ public class Tile {
     protected final String printID;
     protected final int layerID;
     protected final int tileID;
-    protected final int[][] values;
+    protected int[][] values;
 
     public Tile(int size, int seqID, String printID, int layerID, int tileID, int[][] values) {
         this.size = size;
@@ -25,6 +25,10 @@ public class Tile {
 
     public int[][] getValues() {
         return values;
+    }
+
+    public void setValues(int[][] values) {
+        this.values = values;
     }
 
     @Override
