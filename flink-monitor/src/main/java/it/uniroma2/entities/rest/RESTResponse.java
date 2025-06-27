@@ -108,4 +108,8 @@ public class RESTResponse {
             e.printStackTrace();
         }
     }
+
+    public void setLayer(int layer) {
+        this.layer = layer;
+    }
 }

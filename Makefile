@@ -1,21 +1,21 @@
 .PHONY: q gen clean
 
+PRE_GEN:
+	if [ ! -f "micro-challenger/gc25cdocker.tar" ]; then \
+		cd micro-challenger && unzip gc25cdocker.zip && cd ..; \
+	fi && \
+	mvn package && \
+	docker image load -i micro-challenger/gc25cdocker.tar
+
 q:
+	mvn package
 	docker exec jobmanager /opt/flink/bin/flink run /flink-monitor-jar/flink-monitor-1.0-SNAPSHOT.jar
 
-gen:
-	mvn clean package
-	docker image load -i micro-challenger/gc25cdocker.tar
+gen: PRE_GEN
 	docker compose -p sabd up -d
 
-gen_s:
-	@if [ $(words $(MAKECMDGOALS)) -ne 2 ]; then     \
-	  echo "Usage: make gen_s <num_taskmanagers>"; \
-	  exit 1; \
-	fi; \
-	TM=$(word 2,$(MAKECMDGOALS)); \
-	docker image load -i micro-challenger/gc25cdocker.tar
-	docker compose -p sabd up -d --scale taskmanager=$$TM
+gen_s: PRE_GEN
+	docker compose -p sabd up -d --scale taskmanager=$(TM)
 
 clean:
 	docker compose -p sabd down -v

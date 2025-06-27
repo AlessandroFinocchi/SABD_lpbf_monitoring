@@ -17,13 +17,18 @@ public class Main {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
         RESTSource httpSource = new RESTSource();
+        System.out.println("Prova 1");
         DataStream<RESTResponse> batches = env.fromSource(
                         httpSource,
                         WatermarkStrategy.noWatermarks(),
                         "REST-Batches-Source"
                 )
                 .setParallelism(1)
-                .uid("HttpIntegerSourceUID");
+                .uid("HttpIntegerSourceUID")
+                .map(batch -> {
+                    System.out.println(batch);
+                    return batch;
+                });
 
         batches.print();
 

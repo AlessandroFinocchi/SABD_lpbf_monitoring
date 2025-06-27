@@ -15,8 +15,8 @@ public class GcRestController {
     private static final int     BENCH_LIMIT     = 3600;
     private static final boolean BENCH_TEST      = false;
 
-    private static final String URL = "http://localhost:8866";
-//    private static final String URL = "http://micro-challenger:8866";
+//    private static final String URL = "http://localhost:8866";
+    private static final String URL = "http://micro-challenger:8866";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_MSGPACK = "application/x-msgpack";
