@@ -1,3 +1,5 @@
 /flink-monitor/target/
 /.idea/
 /micro-challenger/gc25cdocker.tar
+/micro-challenger/data/db
+/micro-challenger/data/snap.0000000004D9ECDD
