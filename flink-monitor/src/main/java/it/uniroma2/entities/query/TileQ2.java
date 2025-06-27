@@ -17,13 +17,31 @@ public class TileQ2 extends TileQ1 {
     //     this.outliers = new ArrayList<>();
     // }
 
+    protected TileQ2(TileQ2 source) {
+        super(source.size, source.seqID, source.printID, source.layerID, source.tileID, source.values, source.saturatedPoints);
+        this.outliers = new ArrayList<>();
+        for (Outlier outlier : source.outliers) {
+            this.outliers.add(new Outlier(outlier.x, outlier.y, outlier.value));
+        }
+    }
+
     public TileQ2(int size, String printID, int tileID) {
         super(size, -1, printID, -1, tileID, new int[size][size], -1);
         this.outliers = new ArrayList<>();
     }
 
+    @Override
+    public int getSeqID() {
+        return seqID;
+    }
+
     public void setSeqID(int seqID) {
         this.seqID = seqID;
+    }
+
+    @Override
+    public int getLayerID() {
+        return layerID;
     }
 
     public void setLayerID(int layerID) {

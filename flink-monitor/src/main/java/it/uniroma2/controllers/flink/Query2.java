@@ -104,8 +104,6 @@ public class Query2 extends AbstractQuery<TileQ1> {
                     }
                 });
 
-        combinedTiles.print();
-
         return combinedTiles;
     }
 
