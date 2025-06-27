@@ -1,29 +1,39 @@
-package it.uniroma2.controllers.flink;//package it.uniroma2.controllers.flink;
-//
-//import it.uniroma2.entities.query.Query1Response;
-//import it.uniroma2.entities.rest.RESTResponse;
-//import org.apache.flink.api.common.functions.FlatMapFunction;
-//import org.apache.flink.streaming.api.datastream.DataStream;
-//import org.apache.flink.util.Collector;
-//
-//public class Query1 extends AbstractQuery<RESTResponse> {
-//
-//    public Query1(DataStream<RESTResponse> dataStream) {
-//        super(dataStream);
-//    }
-//
-//    public DataStream<Query1Response> run() {
-//        // Process the stream to calculate the moving average of the last 10 numbers
-//        DataStream<Query1Response> query1ResponseDataStream = dataStream
-//                .keyBy(value -> 1)
-//                .flatMap(new FlatMapFunction<Query1Response, Query1Response>() {
-//
-//                    @Override
-//                    public void flatMap(Query1Response query1Response, Collector<Query1Response> collector) throws Exception {
-//
-//                    }
-//                });
-//
-//        return query1ResponseDataStream;
-//    }
-//}
+package it.uniroma2.controllers.flink;
+
+import it.uniroma2.entities.query.Tile;
+import it.uniroma2.entities.query.TileQ1;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.streaming.api.datastream.DataStream;
+
+public class Query1 extends AbstractQuery<Tile> {
+    public static final int EMPTY_THRESHOLD = 5000;
+    public static final int SATURATION_THRESHOLD = 65000;
+
+    public Query1(DataStream<Tile> inputStream) {
+        super(inputStream);
+    }
+
+    /*
+     * Checks for points with a temperature greater or equal than SATURATION_THRESHOLD.
+     *   When found, a counter in the tile is increased by 1.
+     * */
+    public DataStream<TileQ1> run() {
+        return inputStream.map(new MapFunction<Tile, TileQ1>() {
+            @Override
+            public TileQ1 map(Tile input) {
+                TileQ1 output = new TileQ1(input);
+
+                // Cycle through all the points and count how many exceed SATURATION_THRESHOLD
+                for (int x = 0; x < input.getSize(); x++) {
+                    for (int y = 0; y < input.getSize(); y++) {
+                        if (input.getValues()[x][y] >= SATURATION_THRESHOLD) {
+                            output.incrementSaturatedPoints();
+                        }
+                    }
+                }
+
+                return output;
+            }
+        });
+    }
+}

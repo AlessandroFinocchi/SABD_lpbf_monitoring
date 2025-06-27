@@ -5,7 +5,6 @@ import it.uniroma2.entities.query.Outlier;
 import it.uniroma2.entities.query.SubTileQ2;
 import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.query.TileQ2;
-import it.uniroma2.utils.MatrixMath;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -18,11 +17,11 @@ import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.util.Collector;
 
 
-public class Query2 extends AbstractQuery<TileQ1> {
+public class Query2Naive extends AbstractQuery<TileQ1> {
     public static final int DEVIATION_THRESHOLD = 6000;
-    public static final int WINDOW_SIZE = 3;
+    private static final int WINDOW_SIZE = 3;
 
-    public Query2(DataStream<TileQ1> inputStream) {
+    public Query2Naive(DataStream<TileQ1> inputStream) {
         super(inputStream);
     }
 
@@ -71,57 +70,82 @@ public class Query2 extends AbstractQuery<TileQ1> {
                  *  */
                 .window(GlobalWindows.create())
                 .trigger(CountTrigger.of(WINDOW_SIZE))
-                /*
-                 * Sum each tile and take the absolute value.
-                 *  */
                 .apply(new WindowFunction<SubTileQ2, SubTileQ2, Tuple3<Integer, Integer, String>, GlobalWindow>() {
                     @Override
-                    public void apply(Tuple3<Integer, Integer, String> key, GlobalWindow globalWindow, Iterable<SubTileQ2> iterable, Collector<SubTileQ2> collector) {
+                    public void apply(Tuple3<Integer, Integer, String> key, GlobalWindow globalWindow, Iterable<SubTileQ2> iterable, Collector<SubTileQ2> collector) throws Exception {
                         SubTileQ2 output = null;
-                        int[][] outputValues = null;
+                        int[][][] stacked = null;
 
                         for (SubTileQ2 input : iterable) {
-                            // Create the output object
-                            if (outputValues == null) {
-                                outputValues = new int[input.getSize()][input.getSize()];
+                            if (stacked == null) {
+                                stacked = new int[WINDOW_SIZE][input.getSize()][input.getSize()];
                             }
 
-                            // Sum each tile
-                            outputValues = MatrixMath.addMatrix(outputValues, input.getValues());
-
-                            // Fill the input object information, as the tile with depth 0
                             if (input.getDepth() == 0) {
-                                output = input;
+                                output = new SubTileQ2(input);
+                            }
+
+                            for (int x = 0; x < input.getSize(); x++) {
+                                for (int y = 0; y < input.getSize(); y++) {
+                                    stacked[input.getDepth()][x][y] = input.getValues()[x][y];
+                                }
                             }
                         }
-                        // Make the difference values absolute
-                        output.setValues(MatrixMath.absMatrix(outputValues));
+
+                        int[][] values = new int[output.getSize()][output.getSize()];
+                        for (int x = 0; x < output.getSize(); x++) {
+                            for (int y = 0; y < output.getSize(); y++) {
+
+                                if (stacked[0][x][y] <= Query1.EMPTY_THRESHOLD || stacked[0][x][y] >= Query1.SATURATION_THRESHOLD) {
+                                    values[x][y] = 0;
+                                    continue;
+                                }
+
+                                int sumNear = 0;
+                                int sumFar = 0;
+                                int countNear = 0;
+                                int countFar = 0;
+                                for (int dx = -Kernel.FAR_DISTANCE_AT_0; dx <= Kernel.FAR_DISTANCE_AT_0; dx++) {
+                                    for (int dy = -Kernel.FAR_DISTANCE_AT_0; dy <= Kernel.FAR_DISTANCE_AT_0; dy++) {
+                                        for (int dz = 0; dz < WINDOW_SIZE; dz++) {
+                                            int target;
+                                            // Padding
+                                            if (x + dx < 0 || x + dx >= output.getSize() || y + dy < 0 || y + dy >= output.getSize()) {
+                                                target = 0;
+                                            } else {
+                                                target = stacked[dz][x + dx][y + dy];
+                                            }
+
+                                            int distance = Math.abs(dx) + Math.abs(dy) + Math.abs(dz);
+                                            if (distance <= Kernel.NEAR_DISTANCE_AT_0) {
+                                                sumNear += target;
+                                                countNear++;
+                                            }
+                                            if (distance > Kernel.NEAR_DISTANCE_AT_0 && distance <= Kernel.FAR_DISTANCE_AT_0) {
+                                                sumFar += target;
+                                                countFar++;
+                                            }
+                                        }
+                                    }
+                                }
+                                values[x][y] = Math.abs((sumNear / countNear) - (sumFar / countFar));
+                            }
+                        }
+                        output.setValues(values);
                         collector.collect(output);
                     }
                 })
-                /*
-                 *
-                 *  */
                 .map(new MapFunction<SubTileQ2, TileQ2>() {
                     @Override
                     public TileQ2 map(SubTileQ2 input) {
                         TileQ2 output = new TileQ2(input);
                         output.setValues(input.getBaseValues());
 
-                        int[][] values = input.getValues();
-                        int[][] baseValues = input.getBaseValues();
-
                         for (int x = 0; x < input.getSize(); x++) {
                             for (int y = 0; y < input.getSize(); y++) {
-
-                                if (baseValues[x][y] <= Query1.EMPTY_THRESHOLD ||
-                                        baseValues[x][y] >= Query1.SATURATION_THRESHOLD)
-                                    continue;
-
-                                if (values[x][y] >= DEVIATION_THRESHOLD) {
-                                    output.addOutlier(new Outlier(x, y, values[x][y]));
+                                if (input.getValues()[x][y] >= DEVIATION_THRESHOLD) {
+                                    output.addOutlier(new Outlier(x, y, input.getValues()[x][y]));
                                 }
-
                             }
                         }
 
@@ -144,12 +168,6 @@ public class Query2 extends AbstractQuery<TileQ1> {
         public SubTileQ2 map(TileQ1 input) {
             SubTileQ2 output = new SubTileQ2(input, this.depth, null);
             if (this.depth == 0) output.setBaseValues(input.getValues());
-
-            int[][] convInput = input.getValues();
-            double[][] convKernel = new Kernel(depth, true).getValues();
-            int[][] convolutionResult = MatrixMath.convolutionPadded(convInput, convKernel);
-            output.setValues(convolutionResult);
-
             return output;
         }
     }
