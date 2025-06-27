@@ -7,9 +7,21 @@ public class TileQ3 extends TileQ2 {
 
     List<Centroid> centroids;
 
+    public TileQ3(int size, String printID, int seqID, int layerID, int tileID, int[][] values, int saturatedPoints, List<Outlier> outliers, List<Centroid> centroids) {
+        super(size, printID, seqID, layerID, tileID, values, saturatedPoints, outliers);
+        this.centroids = centroids;
+    }
+
     public TileQ3(TileQ2 parent) {
-        super(parent);
-        this.centroids = new ArrayList<>();
+        this(parent.getSize(),
+             parent.getPrintID(),
+             parent.getSeqID(),
+             parent.getLayerID(),
+             parent.getTileID(),
+             parent.getValues(),
+             parent.getSaturatedPoints(),
+             parent.getOutliers(),
+             new ArrayList<>());
     }
 
     public void addCentroid(Centroid centroid) {
@@ -19,14 +31,18 @@ public class TileQ3 extends TileQ2 {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Centroid centroid : this.centroids) {
-            sb.append(String.format("(%d,%d,%d) ", centroid.x, centroid.y, centroid.points));
+        sb.append("[");
+        for (int i = 0; i < centroids.size(); i++) {
+            sb.append(String.format("(%d,%d,%d)",
+                                    centroids.get(i).getX(),
+                                    centroids.get(i).getY(),
+                                    centroids.get(i).getPoints()));
+            if (i < centroids.size() - 1) {
+                sb.append(", ");
+            }
         }
-        return "TileQ3{" +
-                "seqID=" + this.getSeqID() +
-                ", layerID=" + this.getLayerID() +
-                ", tileID=" + this.getTileID() +
-                ", centroids=[" + sb + "]" +
-                '}';
+        sb.append("]");
+        return String.format("Q3: {printID='%s', seqID=%4d, layerID=%3d, tileID=%2d, centroids=%s}",
+                             printID, seqID, layerID, tileID, sb);
     }
 }

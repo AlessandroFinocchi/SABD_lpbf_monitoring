@@ -13,31 +13,27 @@ public class Query1 extends AbstractQuery<Tile> {
         super(inputStream);
     }
 
-    public DataStream<TileQ1> run() {
-        // Process the stream to calculate the moving average of the last 10 numbers
-        return inputStream.map(new analyzeSaturationMapper());
-    }
-
     /*
      * Checks for points with a temperature greater or equal than SATURATION_THRESHOLD.
-     *   When found:
-     *       2.2. A counter in the tile is incremented by 1.
+     *   When found, a counter in the tile is increased by 1.
      * */
-    private static class analyzeSaturationMapper implements MapFunction<Tile, TileQ1> {
-        @Override
-        public TileQ1 map(Tile tile) {
-            TileQ1 tileQ1 = new TileQ1(tile);
-            int[][] tileValues = tileQ1.getValues();
+    public DataStream<TileQ1> run() {
+        return inputStream.map(new MapFunction<Tile, TileQ1>() {
+            @Override
+            public TileQ1 map(Tile input) {
+                TileQ1 output = new TileQ1(input);
 
-            for (int x = 0; x < tile.getSize(); x++) {
-                for (int y = 0; y < tile.getSize(); y++) {
-                    if (tileValues[x][y] >= SATURATION_THRESHOLD) {
-                        tileQ1.incrementSaturatedPoints();
+                // Cycle through all the points and count how many exceed SATURATION_THRESHOLD
+                for (int x = 0; x < input.getSize(); x++) {
+                    for (int y = 0; y < input.getSize(); y++) {
+                        if (input.getValues()[x][y] >= SATURATION_THRESHOLD) {
+                            output.incrementSaturatedPoints();
+                        }
                     }
                 }
-            }
 
-            return tileQ1;
-        }
+                return output;
+            }
+        });
     }
 }

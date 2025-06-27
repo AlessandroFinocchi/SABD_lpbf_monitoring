@@ -1,7 +1,7 @@
 package it.uniroma2.entities.query;
 
 public class Centroid {
-    int x, y, points;
+    private int x, y, points;
 
     public Centroid(int x, int y, int points) {
         this.x = x;

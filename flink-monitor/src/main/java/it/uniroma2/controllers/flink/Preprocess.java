@@ -28,8 +28,8 @@ public class Preprocess extends AbstractQuery<RESTResponse> {
         public Tile map(RESTResponse response) throws Exception {
             return new Tile(
                     response.getSize(),
-                    response.getBatchId(),
                     response.getPrintId(),
+                    response.getBatchId(),
                     response.getLayer(),
                     response.getTileId(),
                     response.convertTiffToMatrix()

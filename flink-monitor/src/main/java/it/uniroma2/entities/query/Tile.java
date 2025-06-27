@@ -4,13 +4,13 @@ import it.uniroma2.utils.MatrixMath;
 
 public class Tile {
     protected final int size;
-    protected final int seqID;
-    protected final String printID;
-    protected final int layerID;
-    protected final int tileID;
+    protected String printID;
+    protected int seqID;
+    protected int layerID;
+    protected int tileID;
     protected int[][] values;
 
-    public Tile(int size, int seqID, String printID, int layerID, int tileID, int[][] values) {
+    public Tile(int size, String printID, int seqID, int layerID, int tileID, int[][] values) {
         this.size = size;
         this.seqID = seqID;
         this.printID = printID;
@@ -56,7 +56,6 @@ public class Tile {
                 ", tileID=" + tileID +
                 ", values=\n" + MatrixMath.matrixToString(values) +
                 '}';
-        // MatrixMath.saveMatrix(this.values, sb.toString());
         return sb;
     }
 }

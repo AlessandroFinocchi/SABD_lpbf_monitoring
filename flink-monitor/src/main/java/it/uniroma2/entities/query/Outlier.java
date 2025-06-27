@@ -3,7 +3,7 @@ package it.uniroma2.entities.query;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
 public class Outlier implements Clusterable {
-    int x, y, value;
+    private int x, y, value;
 
     public Outlier(int x, int y, int value) {
         this.x = x;

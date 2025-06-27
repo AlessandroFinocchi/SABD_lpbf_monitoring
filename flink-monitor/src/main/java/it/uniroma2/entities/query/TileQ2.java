@@ -6,54 +6,22 @@ import java.util.List;
 
 public class TileQ2 extends TileQ1 {
 
-    protected int seqID;
-    protected int layerID;
-    protected int[][] baseValues;
     protected List<Outlier> outliers;
 
-    // Copy constructor pattern
-    // public TileQ2(TileQ1 parent) {
-    //     super(parent.size, parent.seqID, parent.printID, parent.layerID, parent.tileID, parent.values, parent.saturatedPoints);
-    //     this.outliers = new ArrayList<>();
-    // }
-
-    protected TileQ2(TileQ2 source) {
-        super(source.size, source.seqID, source.printID, source.layerID, source.tileID, source.values, source.saturatedPoints);
-        this.outliers = new ArrayList<>();
-        for (Outlier outlier : source.outliers) {
-            this.outliers.add(new Outlier(outlier.x, outlier.y, outlier.value));
-        }
+    public TileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, int saturatedPoints, List<Outlier> outliers) {
+        super(size, printID, seqID, layerID, tileID, values, saturatedPoints);
+        this.outliers = outliers;
     }
 
-    public TileQ2(int size, String printID, int tileID) {
-        super(size, -1, printID, -1, tileID, new int[size][size], -1);
-        this.outliers = new ArrayList<>();
-    }
-
-    @Override
-    public int getSeqID() {
-        return seqID;
-    }
-
-    public void setSeqID(int seqID) {
-        this.seqID = seqID;
-    }
-
-    @Override
-    public int getLayerID() {
-        return layerID;
-    }
-
-    public void setLayerID(int layerID) {
-        this.layerID = layerID;
-    }
-
-    public int[][] getBaseValues() {
-        return baseValues;
-    }
-
-    public void setBaseValues(int[][] baseValues) {
-        this.baseValues = baseValues;
+    public TileQ2(SubTileQ2 input) {
+        this(input.getSize(),
+             input.getPrintID(),
+             input.getSeqID(),
+             input.getLayerID(),
+             input.getTileID(),
+             input.getValues(),
+             input.getSaturatedPoints(),
+             new ArrayList<>());
     }
 
     public List<Outlier> getOutliers() {
@@ -63,7 +31,7 @@ public class TileQ2 extends TileQ1 {
     public List<Outlier> getOrderedOutliers(int maxPoints) {
         int points = Math.min(maxPoints, this.outliers.size());
         List<Outlier> ordered = new ArrayList<>();
-        this.outliers.sort(Comparator.comparingInt(o -> -o.value));
+        this.outliers.sort(Comparator.comparingInt(o -> -o.getValue()));
         for (int i = 0; i < points && i < this.outliers.size(); i++) {
             ordered.add(this.outliers.get(i));
         }
@@ -76,20 +44,20 @@ public class TileQ2 extends TileQ1 {
 
     @Override
     public String toString() {
-        StringBuilder firstOrderedOutliers = new StringBuilder();
-        for (Outlier outlier : this.getOrderedOutliers(5)) {
-            firstOrderedOutliers.append(String.format("(%d,%d,%d) ", outlier.x, outlier.y, outlier.value));
+        List<Outlier> ordered = this.getOrderedOutliers(5);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < 5 && i < ordered.size(); i++) {
+            sb.append(String.format("(%d,%d,%d)",
+                                    ordered.get(i).getX(),
+                                    ordered.get(i).getY(),
+                                    ordered.get(i).getValue()));
+            if (i < ordered.size() - 1) {
+                sb.append(", ");
+            }
         }
-        return "TileQ2{" +
-                "printID='" + printID + '\'' +
-                ", seqID=" + seqID +
-                ", layerID=" + layerID +
-                ", saturatedPoints=" + saturatedPoints +
-                ", size=" + size +
-                ", seqID=" + seqID +
-                ", layerID=" + layerID +
-                ", tileID=" + tileID +
-                ", firstOrderedOutliers=" + firstOrderedOutliers +
-                '}';
+        sb.append("]");
+        return String.format("Q2: {printID='%s', seqID=%4d, layerID=%3d, tileID=%2d, firstOrderedOutliers=%s}",
+                             printID, seqID, layerID, tileID, sb);
     }
 }

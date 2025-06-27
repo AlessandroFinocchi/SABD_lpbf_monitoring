@@ -61,18 +61,19 @@ public class Main {
         Query1 query1 = new Query1(tiles);
         DataStream<TileQ1> saturationTiles = query1.run();
 
-        // saturationTiles.print();
+        saturationTiles.print();
 
         // Query 2
         Query2 query2 = new Query2(saturationTiles);
         DataStream<TileQ2> outlierTiles = query2.run();
+
+        outlierTiles.print();
 
         // Query 3
         Query3 query3 = new Query3(outlierTiles);
         DataStream<TileQ3> centroidTiles = query3.run();
 
         centroidTiles.print();
-
 
         env.execute("Flink L-PBF job");
     }

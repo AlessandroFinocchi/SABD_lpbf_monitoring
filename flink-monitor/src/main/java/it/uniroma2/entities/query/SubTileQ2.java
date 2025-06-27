@@ -2,10 +2,16 @@ package it.uniroma2.entities.query;
 
 public class SubTileQ2 extends TileQ1 {
     protected int depth;
-    private int[][] baseValues;
+    protected int[][] baseValues;
+
+    public SubTileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, int saturatedPoints, int depth, int[][] baseValues) {
+        super(size, printID, seqID, layerID, tileID, values, saturatedPoints);
+        this.depth = depth;
+        this.baseValues = baseValues;
+    }
 
     public SubTileQ2(TileQ1 parent) {
-        super(parent.size, parent.seqID, parent.printID, parent.layerID, parent.tileID, parent.values, parent.saturatedPoints);
+        super(parent.size, parent.printID, parent.seqID, parent.layerID, parent.tileID, parent.values, parent.saturatedPoints);
     }
 
     public int getDepth() {
@@ -31,7 +37,6 @@ public class SubTileQ2 extends TileQ1 {
                 ", seqID=" + seqID +
                 ", layerID=" + layerID +
                 ", tileID=" + tileID +
-                // ", values=\n" + MatrixMath.matrixToString(values) +
                 '}';
     }
 }
