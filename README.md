@@ -7,7 +7,7 @@
    to compose docker services with scaling parameter
     - num_taskmanagers $\in$ \{ $1, 2, \dots$ \}
     ```
-    make gen_s <num_taskmanagers>
+    make gen_s TM=<num_taskmanagers>
     ```
    
 3. Execute flink query with `make q`
