@@ -106,6 +106,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                     @Override
                     public TileQ2 map(SubTileQ2 input) {
                         TileQ2 output = new TileQ2(input);
+                        output.setValues(input.getBaseValues());
 
                         int[][] values = input.getValues();
                         int[][] baseValues = input.getBaseValues();
@@ -141,10 +142,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
 
         @Override
         public SubTileQ2 map(TileQ1 input) {
-            SubTileQ2 output = new SubTileQ2(input);
-
-            output.setDepth(this.depth);
-
+            SubTileQ2 output = new SubTileQ2(input, this.depth, null);
             if (this.depth == 0) output.setBaseValues(input.getValues());
 
             int[][] convInput = input.getValues();

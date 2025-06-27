@@ -1,10 +1,7 @@
 package it.uniroma2;
 
 import it.uniroma2.boundaries.RESTSource;
-import it.uniroma2.controllers.flink.Preprocess;
-import it.uniroma2.controllers.flink.Query1;
-import it.uniroma2.controllers.flink.Query2;
-import it.uniroma2.controllers.flink.Query3;
+import it.uniroma2.controllers.flink.*;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.query.TileQ2;
@@ -65,6 +62,7 @@ public class Main {
 
         // Query 2
         Query2 query2 = new Query2(saturationTiles);
+        // Query2Naive query2 = new Query2Naive(saturationTiles);
         DataStream<TileQ2> outlierTiles = query2.run();
 
         outlierTiles.print();
