@@ -2,4 +2,5 @@
 /.idea/
 /micro-challenger/gc25cdocker.tar
 /micro-challenger/data/db
-/micro-challenger/data/snap.0000000004D9ECDD
+/micro-challenger/data/snap.*
+/sabd_lpbf_monitoring.iml

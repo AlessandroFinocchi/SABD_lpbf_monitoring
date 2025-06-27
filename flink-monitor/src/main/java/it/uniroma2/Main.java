@@ -3,8 +3,15 @@ package it.uniroma2;
 import it.uniroma2.boundaries.RESTSource;
 import it.uniroma2.entities.rest.RESTResponse;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
+import org.apache.flink.configuration.MemorySize;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
+
+import java.time.Duration;
 
 public class Main {
 
@@ -15,24 +22,41 @@ public class Main {
     private static void testQueries() throws Exception {
         // Set up the Flink streaming environment
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        // For FileSink working
+//        env.enableCheckpointing(10000L);
+
         env.setParallelism(1);
         RESTSource httpSource = new RESTSource();
-        System.out.println("Prova 1");
+        System.out.println("Prova 2 - STRINGHE");
         DataStream<RESTResponse> batches = env.fromSource(
                         httpSource,
                         WatermarkStrategy.noWatermarks(),
                         "REST-Batches-Source"
                 )
-                .setParallelism(1)
-                .uid("HttpIntegerSourceUID")
-                .map(batch -> {
-                    System.out.println(batch);
-                    return batch;
-                });
+                .setParallelism(1);
+
+        DataStream<String> strings = batches.map(RESTResponse::toString);
+        testSink(strings);
 
         batches.print();
 
         env.execute("L-PBF Monitoring Job");
+    }
+
+    private static void testSink(DataStream<String> strings) {
+
+        final FileSink<String> sink = FileSink
+                .forRowFormat(new Path("/results/out"), new SimpleStringEncoder<String>("UTF-8"))
+                .withRollingPolicy(
+                        DefaultRollingPolicy.builder()
+                                .withRolloverInterval(Duration.ofMinutes(15))
+                                .withInactivityInterval(Duration.ofMinutes(5))
+                                .withMaxPartSize(MemorySize.ofMebiBytes(1024))
+                                .build())
+                .build();
+
+        strings.sinkTo(sink).setParallelism(1);
     }
 
     private static void executeQueries() throws Exception {
