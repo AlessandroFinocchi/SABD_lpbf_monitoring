@@ -1,7 +1,10 @@
 package it.uniroma2;
 
 import it.uniroma2.boundaries.RESTSource;
-import it.uniroma2.controllers.flink.*;
+import it.uniroma2.controllers.flink.Preprocess;
+import it.uniroma2.controllers.flink.Query1;
+import it.uniroma2.controllers.flink.Query2ProcessFunction;
+import it.uniroma2.controllers.flink.Query3;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.query.TileQ2;
@@ -16,7 +19,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         // Set up the Flink streaming environment
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+        env.setParallelism(16);
 
         executeQueries(env);
     }
@@ -58,20 +61,21 @@ public class Main {
         Query1 query1 = new Query1(tiles);
         DataStream<TileQ1> saturationTiles = query1.run();
 
-        saturationTiles.print();
+        // saturationTiles.print();
 
-        // Query 2
-        Query2 query2 = new Query2(saturationTiles);
+        // // Query 2
+        // Query2 query2 = new Query2(saturationTiles);
         // Query2Naive query2 = new Query2Naive(saturationTiles);
+        Query2ProcessFunction query2 = new Query2ProcessFunction(saturationTiles);
         DataStream<TileQ2> outlierTiles = query2.run();
 
-        outlierTiles.print();
+        // outlierTiles.print();
 
-        // Query 3
+        // // Query 3
         Query3 query3 = new Query3(outlierTiles);
         DataStream<TileQ3> centroidTiles = query3.run();
 
-        centroidTiles.print();
+        // centroidTiles.print();
 
         env.execute("Flink L-PBF job");
     }

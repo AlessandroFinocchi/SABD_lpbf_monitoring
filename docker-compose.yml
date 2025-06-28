@@ -34,6 +34,7 @@ services:
         parallelism.default: ${FLINK_PARALLELISM_DEFAULT}
         rest.address: ${JOBMANAGER_REST_ADDR}
         rest.port: ${JOBMANAGER_REST_PORT}
+        jobmanager.memory.process.size: ${JOBMANAGER_MEMORY}
     networks: # networks to connect
       flink_network: # the name of the network
         ipv4_address: 10.0.0.10 # static ip of the container
@@ -50,6 +51,7 @@ services:
         jobmanager.rpc.address: ${TASKMANAGER_RPC_ADDRESS}
         taskmanager.numberOfTaskSlots: ${TASKMANAGER_NUMBER_OF_TASK_SLOTS}
         parallelism.default: ${FLINK_PARALLELISM_DEFAULT}
+        taskmanager.memory.process.size: ${TASKMANAGER_MEMORY}
     networks: # networks to connect
       flink_network: # the name of the network
 

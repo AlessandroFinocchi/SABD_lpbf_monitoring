@@ -38,7 +38,7 @@ public class RESTSourceReader implements SourceReader<RESTResponse, RESTSplit> {
         output.collect(batch);
 
         // simple backoff; you could use context.callAsync(...) for non-blocking
-        Thread.sleep(1);
+        Thread.sleep(5);
         return InputStatus.MORE_AVAILABLE;
     }
 
