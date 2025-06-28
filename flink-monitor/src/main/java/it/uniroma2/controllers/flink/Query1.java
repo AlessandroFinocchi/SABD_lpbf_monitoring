@@ -34,6 +34,6 @@ public class Query1 extends AbstractQuery<Tile> {
 
                 return output;
             }
-        });
+        }).name("Query1");
     }
 }

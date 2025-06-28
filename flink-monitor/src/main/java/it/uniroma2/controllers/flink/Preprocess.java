@@ -13,7 +13,7 @@ public class Preprocess extends AbstractQuery<RESTResponse> {
 
     // Transforms a stream of RESTResponse into a stream of Tile
     public DataStream<Tile> run() {
-        return inputStream.map(new TilePreprocessMapper());
+        return inputStream.map(new TilePreprocessMapper()).name("Preprocess");
     }
 
     /*

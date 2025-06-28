@@ -49,7 +49,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                     public boolean filter(SubTileQ2 subTileQ2) throws Exception {
                         return (subTileQ2.getLayerID() + subTileQ2.getDepth() >= WINDOW_SIZE - 1);
                     }
-                })
+                }).name("Q2 Filter")
                 /*
                  * Divide the stream by a composite key, composed of:
                  *   1. layerID + depth: this combination allows combining the tiles of a layer with the same tile of previous layers,
@@ -98,7 +98,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                         output.setValues(MatrixMath.absMatrix(outputValues));
                         collector.collect(output);
                     }
-                })
+                }).name("Q2 Window apply")
                 /*
                  *
                  *  */
@@ -127,7 +127,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
 
                         return output;
                     }
-                });
+                }).name("Q2 Map");
 
         return combinedTiles;
     }

@@ -54,6 +54,6 @@ public class Query3 extends AbstractQuery<TileQ2> {
 
                         return output;
                     }
-                });
+                }).name("Query3");
     }
 }
