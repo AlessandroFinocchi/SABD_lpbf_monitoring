@@ -1,6 +1,7 @@
 package it.uniroma2;
 
 import it.uniroma2.boundaries.RESTSource;
+import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.rest.RESTResponse;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
@@ -23,8 +24,9 @@ public class Main {
         // Set up the Flink streaming environment
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        // For FileSink working
-//        env.enableCheckpointing(10000L);
+//        // End-to-end latency tracking - Negative impact on performance
+//        ExecutionConfig cfg = env.getConfig();
+//        cfg.setLatencyTrackingInterval(50L); // In ms
 
         env.setParallelism(1);
         RESTSource httpSource = new RESTSource();
@@ -36,7 +38,9 @@ public class Main {
                 )
                 .setParallelism(1);
 
-        DataStream<String> strings = batches.map(RESTResponse::toString);
+        DataStream<RESTResponse> strings = batches.map(new MetricsRichMapFunction<>())
+                .name("RESTResponseToStringWithMetrics");;
+
         testSink(strings);
 
         batches.print();
@@ -44,10 +48,10 @@ public class Main {
         env.execute("L-PBF Monitoring Job");
     }
 
-    private static void testSink(DataStream<String> strings) {
+    private static void testSink(DataStream<RESTResponse> strings) {
 
-        final FileSink<String> sink = FileSink
-                .forRowFormat(new Path("/results/out"), new SimpleStringEncoder<String>("UTF-8"))
+        final FileSink<RESTResponse> sink = FileSink
+                .forRowFormat(new Path("/results/out"), new SimpleStringEncoder<RESTResponse>("UTF-8"))
                 .withRollingPolicy(
                         DefaultRollingPolicy.builder()
                                 .withRolloverInterval(Duration.ofMinutes(15))
