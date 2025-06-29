@@ -15,26 +15,35 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
     private transient long counter = 0;
     private transient double start;
     private transient PrintWriter writer;
+    private final String pipelinePart;
+
+    /***
+     *
+     * @param pipelinePart: the part of pipeline we are computing metrics for (a query, an operator, a window)
+     */
+    public MetricsRichMapFunction(String pipelinePart) {
+        super();
+        this.pipelinePart = pipelinePart;
+    }
 
     @Override
     public void open(OpenContext parameters) throws Exception {
         super.open(parameters);
 
-        System.out.println("OPEN METRICS ");
+        System.out.println("OPEN METRICS FOR " + this.pipelinePart);
 
-        getRuntimeContext().getMetricGroup().gauge("throughput", (Gauge<Double>) () -> this.throughput);
-        getRuntimeContext().getMetricGroup().gauge("latency", (Gauge<Double>) () -> this.latency);
+        getRuntimeContext().getMetricGroup().gauge("throughput-" + this.pipelinePart, (Gauge<Double>) () -> this.throughput);
+        getRuntimeContext().getMetricGroup().gauge("latency-" + this.pipelinePart, (Gauge<Double>) () -> this.latency);
         this.start = System.currentTimeMillis();
 
         try {
-            File metricsFile = new File("metrics.txt");
+            File metricsFile = new File("metrics_" + this.pipelinePart + ".txt");
             FileWriter fileWriter = new FileWriter(metricsFile, true);
             writer = new PrintWriter(fileWriter);
-            System.out.println("Metrics file created/opened successfully in directory" +  metricsFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error opening the metrics file: " + e.getMessage());
-        }
+            System.out.println("Metrics file created/opened successfully for " + this.pipelinePart +
+                    " in directory " + metricsFile.getAbsolutePath());
+        } catch (IOException e) { System.err.println("Error opening the metrics_" + this.pipelinePart +
+                ".txt file: " + e.getMessage()); }
     }
 
     @Override
@@ -45,13 +54,13 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         this.throughput = this.counter / elapsed_sec; // tuple / s
         this.latency = elapsed_millis / this.counter; // ms / tuple
 
-        System.out.println("Processing element #" + this.counter);
+        System.out.println("Processing element #" + this.counter + " for " + this.pipelinePart);
 
         if (writer != null) {
             writer.println("Throughput: " + this.throughput + " tuples/s");
             writer.println("Latency: " + this.latency + " ms/tuple");
             writer.flush();
-            System.out.println("Metrics written to file.");
+            System.out.println("Metrics for " + this.pipelinePart + " written to file.");
         }
 
         return response;
@@ -61,7 +70,7 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
     public void close() throws Exception {
         if (writer != null) {
             writer.close();
-            System.out.println("Metrics file closed");
+            System.out.println("Metrics file closed for " + this.pipelinePart);
         }
 
         super.close();

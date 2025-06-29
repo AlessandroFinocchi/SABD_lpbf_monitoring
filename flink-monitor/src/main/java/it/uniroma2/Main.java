@@ -38,8 +38,8 @@ public class Main {
                 )
                 .setParallelism(1);
 
-        DataStream<RESTResponse> strings = batches.map(new MetricsRichMapFunction<>())
-                .name("RESTResponseToStringWithMetrics");;
+        DataStream<RESTResponse> strings = batches.map(new MetricsRichMapFunction<RESTResponse>("query_test"))
+                .name("RESTResponseToStringWithMetrics");
 
         testSink(strings);
 
