@@ -17,7 +17,7 @@ services:
     container_name: jobmanager
     hostname: jobmanager
     build:
-      context: ./flink-monitor   # relative path to the Nifi Dockerfile
+      context: ./flink-monitor
     depends_on:
       - micro-challenger
     ports:
@@ -41,7 +41,7 @@ services:
 
   taskmanager:
     build:
-      context: ./flink-monitor   # relative path to the Nifi Dockerfile
+      context: ./flink-monitor
     depends_on:
       - jobmanager
     command: taskmanager

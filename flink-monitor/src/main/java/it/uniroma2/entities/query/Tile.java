@@ -2,7 +2,7 @@ package it.uniroma2.entities.query;
 
 import it.uniroma2.utils.MatrixMath;
 
-public class Tile {
+public class Tile implements WithSeqID {
     protected final int size;
     protected String printID;
     protected int seqID;

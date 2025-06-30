@@ -1,5 +1,6 @@
 package it.uniroma2.controllers;
 
+import it.uniroma2.entities.query.WithSeqID;
 import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.metrics.Gauge;
@@ -53,14 +54,19 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         double elapsed_sec = elapsed_millis / 1000;
         this.throughput = this.counter / elapsed_sec; // tuple / s
         this.latency = elapsed_millis / this.counter; // ms / tuple
+//        int id = ((WithSeqID) response).getSeqID();
 
         System.out.println("Processing element #" + this.counter + " for " + this.pipelinePart);
 
         if (writer != null) {
             writer.println("Throughput: " + this.throughput + " tuples/s");
             writer.println("Latency: " + this.latency + " ms/tuple");
+//            writer.println(id + "," + elapsed_sec + "," + this.throughput + "," + this.latency);
             writer.flush();
             System.out.println("Metrics for " + this.pipelinePart + " written to file.");
+        }
+        else {
+            System.out.println("Writer null");
         }
 
         return response;
