@@ -36,6 +36,7 @@ public class Query1 extends AbstractQuery<Tile> {
                         return output;
                     }
                 })
+                .setParallelism(1)
                 .map(new MetricsRichMapFunction<>("q1"))
                 .name("Query1");
     }

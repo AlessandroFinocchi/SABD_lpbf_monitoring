@@ -38,13 +38,13 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         this.start = System.currentTimeMillis();
 
         try {
-            File metricsFile = new File("metrics_" + this.pipelinePart + ".txt");
+            File metricsFile = new File("metrics_" + this.pipelinePart + ".csv");
             FileWriter fileWriter = new FileWriter(metricsFile, true);
             writer = new PrintWriter(fileWriter);
             System.out.println("Metrics file created/opened successfully for " + this.pipelinePart +
                     " in directory " + metricsFile.getAbsolutePath());
         } catch (IOException e) { System.err.println("Error opening the metrics_" + this.pipelinePart +
-                ".txt file: " + e.getMessage()); }
+                ".csv file: " + e.getMessage()); }
     }
 
     @Override
@@ -54,14 +54,12 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         double elapsed_sec = elapsed_millis / 1000;
         this.throughput = this.counter / elapsed_sec; // tuple / s
         this.latency = elapsed_millis / this.counter; // ms / tuple
-//        int id = ((WithSeqID) response).getSeqID();
+        int id = ((WithSeqID) response).getSeqID();
 
         System.out.println("Processing element #" + this.counter + " for " + this.pipelinePart);
 
         if (writer != null) {
-            writer.println("Throughput: " + this.throughput + " tuples/s");
-            writer.println("Latency: " + this.latency + " ms/tuple");
-//            writer.println(id + "," + elapsed_sec + "," + this.throughput + "," + this.latency);
+            writer.println(id + "," + elapsed_sec + "," + this.throughput + "," + this.latency);
             writer.flush();
             System.out.println("Metrics for " + this.pipelinePart + " written to file.");
         }
