@@ -68,4 +68,9 @@ public class GcRestController {
             return b;
         }
     }
+
+    public static void postResult(String benchId) throws Exception {
+
+    }
+
 }
