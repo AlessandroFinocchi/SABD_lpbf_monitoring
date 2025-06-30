@@ -4,10 +4,11 @@ PRE_GEN:
 	if [ ! -f "micro-challenger/gc25cdocker.tar" ]; then \
 		cd micro-challenger && unzip gc25cdocker.zip && cd ..; \
 	fi && \
-	mvn clean package && \
+	mvn package && \
 	docker image load -i micro-challenger/gc25cdocker.tar
 
 q:
+	mvn package
 	docker exec jobmanager /opt/flink/bin/flink run /flink-monitor-jar/flink-monitor-1.0-SNAPSHOT.jar
 
 gen: PRE_GEN

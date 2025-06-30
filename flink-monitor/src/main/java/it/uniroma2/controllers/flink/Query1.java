@@ -1,5 +1,6 @@
 package it.uniroma2.controllers.flink;
 
+import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.query.TileQ1;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -19,21 +20,23 @@ public class Query1 extends AbstractQuery<Tile> {
      * */
     public DataStream<TileQ1> run() {
         return inputStream.map(new MapFunction<Tile, TileQ1>() {
-            @Override
-            public TileQ1 map(Tile input) {
-                TileQ1 output = new TileQ1(input);
+                    @Override
+                    public TileQ1 map(Tile input) {
+                        TileQ1 output = new TileQ1(input);
 
-                // Cycle through all the points and count how many exceed SATURATION_THRESHOLD
-                for (int x = 0; x < input.getSize(); x++) {
-                    for (int y = 0; y < input.getSize(); y++) {
-                        if (input.getValues()[x][y] >= SATURATION_THRESHOLD) {
-                            output.incrementSaturatedPoints();
+                        // Cycle through all the points and count how many exceed SATURATION_THRESHOLD
+                        for (int x = 0; x < input.getSize(); x++) {
+                            for (int y = 0; y < input.getSize(); y++) {
+                                if (input.getValues()[x][y] >= SATURATION_THRESHOLD) {
+                                    output.incrementSaturatedPoints();
+                                }
+                            }
                         }
-                    }
-                }
 
-                return output;
-            }
-        }).name("Query1");
+                        return output;
+                    }
+                })
+                .map(new MetricsRichMapFunction<>("q1"))
+                .name("Query1");
     }
 }

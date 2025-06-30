@@ -1,8 +1,8 @@
 package it.uniroma2.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.uniroma2.entities.rest.RESTResponse;
 import it.uniroma2.entities.rest.BenchConfig;
+import it.uniroma2.entities.rest.RESTResponse;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 import java.io.*;
@@ -10,13 +10,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class GcRestController {
-    private static final String  BENCH_API_TOKEN = "polimi-deib";
-    private static final String  BENCH_NAME      = "unoptimized";
+    private static final String BENCH_API_TOKEN = "polimi-deib";
+    private static final String BENCH_NAME = "unoptimized";
     private static final int     BENCH_LIMIT     = 3600;
-    private static final boolean BENCH_TEST      = false;
+    // private static final int BENCH_LIMIT = 32;
+    private static final boolean BENCH_TEST = false;
 
     // private static final String URL = "http://localhost:8866";
-   private static final String URL = "http://micro-challenger:8866";
+    private static final String URL = "http://micro-challenger:8866";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_MSGPACK = "application/x-msgpack";
@@ -44,7 +45,7 @@ public class GcRestController {
     }
 
     public static void startBench(String benchId) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(URL + "/api/start/"+benchId).openConnection();
+        HttpURLConnection conn = (HttpURLConnection) new URL(URL + "/api/start/" + benchId).openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
 
