@@ -2,26 +2,25 @@ package it.uniroma2.entities.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.uniroma2.entities.query.Centroid;
 
 import java.util.List;
 
-public class RESTResult {
+public class RESTResultRequest {
     private final int batchId;
     private final int query;
     private final String printId;
     private final int tileId;
     private final long saturated;
-    private final List<Centroid> centroids;
+    private final List<RESTCentroid> centroids;
 
     @JsonCreator
-    public RESTResult(
+    public RESTResultRequest(
             @JsonProperty("batch_id") int batchId,
             @JsonProperty("query") int query,
             @JsonProperty("print_id") String printId,
             @JsonProperty("tile_id") int tileId,
             @JsonProperty("saturated") long saturated,
-            @JsonProperty("centroids") List<Centroid> centroids) {
+            @JsonProperty("centroids") List<RESTCentroid> centroids) {
         this.batchId = batchId;
         this.query = query;
         this.printId = printId;
@@ -62,7 +61,7 @@ public class RESTResult {
         return saturated;
     }
 
-    public List<Centroid> getCentroids() {
+    public List<RESTCentroid> getCentroids() {
         return centroids;
     }
 }

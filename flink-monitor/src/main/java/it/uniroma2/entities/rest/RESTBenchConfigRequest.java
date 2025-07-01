@@ -2,13 +2,13 @@ package it.uniroma2.entities.rest;
 
 import org.json.JSONObject;
 
-public class BenchConfig {
+public class RESTBenchConfigRequest {
     private final String apiToken;
     private final String name;
     private final boolean test;
     private final int maxBatches;
 
-    public BenchConfig(String apiToken, String name, int maxBatches, boolean test) {
+    public RESTBenchConfigRequest(String apiToken, String name, int maxBatches, boolean test) {
         this.apiToken = apiToken;
         this.name = name;
         this.maxBatches = maxBatches;
@@ -17,7 +17,7 @@ public class BenchConfig {
 
     @Override
     public String toString() {
-        return "BenchConfig{" +
+        return "RESTBenchConfigRequest{" +
                 "\"apiToken\"=\"" + apiToken + "\"," +
                 "\"name\"=\"" + name + "\"," +
                 "\"maxBatches\"=" + maxBatches + ","+

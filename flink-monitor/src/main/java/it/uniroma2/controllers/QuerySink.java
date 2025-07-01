@@ -10,10 +10,16 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.
 import java.time.Duration;
 
 public class QuerySink<T> {
+    private final String filename;
+
+    public QuerySink(String filename) {
+        this.filename = filename;
+    }
+
     public void send(DataStream<T> strings) {
 
         final FileSink<T> sink = FileSink
-                .forRowFormat(new Path("/results/out"), new SimpleStringEncoder<T>("UTF-8"))
+                .forRowFormat(new Path("/results/out_"+filename), new SimpleStringEncoder<T>("UTF-8"))
                 .withRollingPolicy(
                         DefaultRollingPolicy.builder()
                                 .withRolloverInterval(Duration.ofMinutes(15))

@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class RESTResponse {
+public class RESTBatchResponse {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
 
@@ -22,7 +22,7 @@ public class RESTResponse {
     public byte[] tif;
 
     @JsonCreator
-    public RESTResponse(
+    public RESTBatchResponse(
             @JsonProperty("batch_id") int batchId,
             @JsonProperty("print_id") String printId,
             @JsonProperty("tile_id") int tileId,
