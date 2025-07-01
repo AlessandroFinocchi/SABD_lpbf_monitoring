@@ -119,7 +119,7 @@ public class GcRestController {
         }
     }
 
-    public static void endBench(String benchId) throws Exception {
+    public static RESTEndResponse endBench(String benchId) throws Exception {
         URL url = new URL(URL + "/api/end/" + benchId);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -132,9 +132,7 @@ public class GcRestController {
             byte[] response = in.readAllBytes();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-            RESTEndResponse b = objectMapper.readValue(response, RESTEndResponse.class);
-
-            System.out.println(b);
+            return objectMapper.readValue(response, RESTEndResponse.class);
         }
 
     }
