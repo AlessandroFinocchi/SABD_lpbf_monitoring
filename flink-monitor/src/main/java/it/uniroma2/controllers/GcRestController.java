@@ -25,6 +25,7 @@ public class GcRestController {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_MSGPACK = "application/x-msgpack";
+    private static final String APPLICATION_STREAM = "application/octet-stream";
 
     public static synchronized String getBenchId() throws Exception {
         RESTBenchConfigRequest config = new RESTBenchConfigRequest(BENCH_API_TOKEN, BENCH_NAME, BENCH_LIMIT, BENCH_TEST);
@@ -73,7 +74,7 @@ public class GcRestController {
         }
     }
 
-    public static void postResult(TileQ3 input, int query, String benchId) throws Exception {
+    public static RESTPostResultResponse postResult(TileQ3 input, int query, String benchId) throws Exception {
         List<RESTCentroid> restCentroidList = new ArrayList<>();
 
         for(Centroid c: input.getCentroids()) {
@@ -102,15 +103,20 @@ public class GcRestController {
         try (OutputStream os = connection.getOutputStream()) {
             os.write(msgpack);
         } catch (IOException e) {
-            System.out.println("[RESULT] --- Failed to write body: " + connection.getResponseCode());
+            System.out.println("Failed to write body: " + connection.getResponseCode());
             throw new IOException();
         }
 
         if (connection.getResponseCode() != 200) {
-            System.out.println("[RESULT] --- Failed to send result: HTTP " + connection.getResponseCode());
+            System.out.println("Failed to send result: HTTP " + connection.getResponseCode());
             throw new IOException();
         }
 
+        try (InputStream in = connection.getInputStream()) {
+            byte[] response = in.readAllBytes();
+            ObjectMapper objectMapper2 = new ObjectMapper();
+            return objectMapper2.readValue(response, RESTPostResultResponse.class);
+        }
     }
 
     public static void endBench(String benchId) throws Exception {

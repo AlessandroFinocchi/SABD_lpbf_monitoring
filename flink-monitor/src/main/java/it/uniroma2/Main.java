@@ -12,6 +12,7 @@ import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.query.TileQ2;
 import it.uniroma2.entities.query.TileQ3;
 import it.uniroma2.entities.rest.RESTBatchResponse;
+import it.uniroma2.entities.rest.RESTPostResultResponse;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -71,7 +72,8 @@ public class Main {
         centroidTiles.map(new MapFunction<TileQ3, TileQ3>() {
             @Override
             public TileQ3 map(TileQ3 tileQ3) throws Exception {
-                GcRestController.postResult(tileQ3, 0, benchId);
+                RESTPostResultResponse ts = GcRestController.postResult(tileQ3, 0, benchId);
+                System.out.println(ts);
                 return tileQ3;
             }
         });
