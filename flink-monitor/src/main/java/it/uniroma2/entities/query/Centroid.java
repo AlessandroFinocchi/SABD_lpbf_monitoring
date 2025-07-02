@@ -1,19 +1,21 @@
 package it.uniroma2.entities.query;
 
 public class Centroid {
-    private int x, y, points;
+    private double x;
+    private double y;
+    private int points;
 
-    public Centroid(int x, int y, int points) {
+    public Centroid(double x, double y, int points) {
         this.x = x;
         this.y = y;
         this.points = points;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 

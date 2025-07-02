@@ -33,7 +33,7 @@ public class TileQ3 extends TileQ2 {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < centroids.size(); i++) {
-            sb.append(String.format("(%d,%d,%d)",
+            sb.append(String.format("(%.6f,%.6f,%d)",
                                     centroids.get(i).getX(),
                                     centroids.get(i).getY(),
                                     centroids.get(i).getPoints()));

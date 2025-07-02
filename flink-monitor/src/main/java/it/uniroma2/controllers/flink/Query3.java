@@ -31,7 +31,9 @@ public class Query3 extends AbstractQuery<TileQ2> {
 
                         // Compute centroids
                         for (Cluster<Outlier> cluster : clusters) {
-                            int xCentroid = 0, yCentroid = 0, pointsCentroid = 0;
+                            double xCentroid = 0;
+                            double yCentroid = 0;
+                            int pointsCentroid = 0;
                             for (Outlier outlier : cluster.getPoints()) {
                                 xCentroid += outlier.getX();
                                 yCentroid += outlier.getY();

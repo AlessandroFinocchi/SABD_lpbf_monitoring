@@ -3,7 +3,9 @@ package it.uniroma2.entities.query;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
 public class Outlier implements Clusterable {
-    private int x, y, value;
+    private double x;
+    private double y;
+    private int value;
 
     public Outlier(int x, int y, int value) {
         this.x = x;
@@ -11,11 +13,11 @@ public class Outlier implements Clusterable {
         this.value = value;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
