@@ -21,17 +21,15 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        // Set up the Flink streaming environment
-        double startTs = System.currentTimeMillis();
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(16);
 
-        executeQueries(env, startTs);
+        executeQueries(env);
     }
 
-    private static void executeQueries(StreamExecutionEnvironment env, double startTs) throws Exception {
+    private static void executeQueries(StreamExecutionEnvironment env) throws Exception {
         // Get initial DataStream
+        long startTs = System.currentTimeMillis();
         String benchId = GcRestController.getBenchId();
         RESTSource httpSource = new RESTSource(benchId);
         DataStream<RESTBatchResponse> batches = env.fromSource(
@@ -87,5 +85,6 @@ public class Main {
 
         RESTEndResponse challengerMetrics = GcRestController.endBench(benchId);
         //todo PRINT THEM
+        System.out.println("Challenger metrics: " + challengerMetrics);
     }
 }

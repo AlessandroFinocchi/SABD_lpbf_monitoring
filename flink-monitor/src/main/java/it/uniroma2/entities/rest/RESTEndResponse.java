@@ -34,7 +34,7 @@ public class RESTEndResponse {
 
     @Override
     public String toString() {
-        return "Performances{" +
+        return "Challenger metrics{" +
                 "\n\tcount=" + this.count +
                 "\n\tmissing=" +this.missing +
                 "\n\tthroughput=" + this.throughput +

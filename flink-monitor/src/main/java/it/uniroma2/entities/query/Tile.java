@@ -10,7 +10,7 @@ public class Tile extends PerformanceElement {
     protected int tileID;
     protected int[][] values;
 
-    public Tile(int size, String printID, int seqID, int layerID, int tileID, int[][] values, double arrivalTs) {
+    public Tile(int size, String printID, int seqID, int layerID, int tileID, int[][] values, long arrivalTs) {
         super(seqID, arrivalTs);
         this.size = size;
         this.printID = printID;

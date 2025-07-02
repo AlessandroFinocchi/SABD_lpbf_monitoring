@@ -10,7 +10,7 @@ import java.util.Comparator;
 
 public class Preprocess extends AbstractQuery<RESTBatchResponse> {
 
-    public Preprocess(DataStream<RESTBatchResponse> inputStream, double startTs) {
+    public Preprocess(DataStream<RESTBatchResponse> inputStream, long startTs) {
         super(inputStream, startTs);
     }
 

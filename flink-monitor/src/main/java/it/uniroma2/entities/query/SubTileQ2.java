@@ -4,7 +4,7 @@ public class SubTileQ2 extends TileQ1 {
     protected int depth;
     protected int[][] baseValues;
 
-    public SubTileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, double arrivalTs, int saturatedPoints, int depth, int[][] baseValues) {
+    public SubTileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, long arrivalTs, int saturatedPoints, int depth, int[][] baseValues) {
         super(size, printID, seqID, layerID, tileID, values, arrivalTs, saturatedPoints);
         this.depth = depth;
         this.baseValues = baseValues;

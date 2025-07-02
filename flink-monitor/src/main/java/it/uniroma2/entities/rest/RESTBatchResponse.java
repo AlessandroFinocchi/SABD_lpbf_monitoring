@@ -20,7 +20,7 @@ public class RESTBatchResponse {
     public int tileId;
     public int layer;
     public byte[] tif;
-    public final double arrivalTs;
+    public final long arrivalTs;
 
     @JsonCreator
     public RESTBatchResponse(
@@ -61,7 +61,7 @@ public class RESTBatchResponse {
         return tif;
     }
 
-    public double getArrivalTs() {
+    public long getArrivalTs() {
         return arrivalTs;
     }
 

@@ -23,7 +23,7 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
     public static final int DEVIATION_THRESHOLD = 6000;
     public static final int WINDOW_SIZE = 3;
 
-    public Query2ProcessFunction(DataStream<TileQ1> inputStream, double startTs) {
+    public Query2ProcessFunction(DataStream<TileQ1> inputStream, long startTs) {
         super(inputStream, startTs);
     }
 

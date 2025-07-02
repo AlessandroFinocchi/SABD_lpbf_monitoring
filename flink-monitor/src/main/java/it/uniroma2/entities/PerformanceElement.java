@@ -2,10 +2,10 @@ package it.uniroma2.entities;
 
 public abstract class PerformanceElement {
     protected int seqID;
-    protected final double arrivalTs;
-    protected double processingCompletionTime;
+    protected final long arrivalTs;
+    protected long processingCompletionTime;
 
-    public PerformanceElement(int seqID, double arrivalTs) {
+    public PerformanceElement(int seqID, long arrivalTs) {
         this.seqID = seqID;
         this.arrivalTs = arrivalTs;
         this.processingCompletionTime = 0;
@@ -15,15 +15,15 @@ public abstract class PerformanceElement {
         return seqID;
     }
 
-    public double getArrivalTs() {
+    public long getArrivalTs() {
         return arrivalTs;
     }
 
-    public double getProcessingCompletionTime() {
+    public long getProcessingCompletionTime() {
         return processingCompletionTime;
     }
 
-    public void setProcessingCompletionTime(double processingCompletionTime) {
+    public void setProcessingCompletionTime(long processingCompletionTime) {
         this.processingCompletionTime = processingCompletionTime;
     }
 }
