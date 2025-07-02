@@ -1,0 +1,35 @@
+services:
+  micro-challenger:
+    container_name: micro-challenger
+    hostname: micro-challenger
+    image: micro-challenger:latest
+    ports:
+      - "8866:8866"
+    volumes:
+      - ../micro-challenger/data:/data
+    command: [ "0.0.0.0:8866", "/data" ]
+    restart: unless-stopped
+    networks:
+      baseline_network:
+
+  python-container:
+    container_name: python-baseline
+    build:
+      context: ./python-container
+    volumes:
+      - type: bind
+        source: ./performance
+        target: /app/performance
+    depends_on:
+      - micro-challenger
+    networks:
+      baseline_network:
+
+
+networks:
+  baseline_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.254
