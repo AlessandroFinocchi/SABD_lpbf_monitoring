@@ -12,8 +12,6 @@ import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
-import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
-import org.apache.flink.streaming.api.windowing.triggers.CountTrigger;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.util.Collector;
 
@@ -69,8 +67,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                 /*
                  * Create a window and trigger once it has collected all tiles needed
                  *  */
-                .window(GlobalWindows.create())
-                .trigger(CountTrigger.of(WINDOW_SIZE))
+                .countWindow(WINDOW_SIZE, WINDOW_SIZE)
                 /*
                  * Sum each tile and take the absolute value.
                  *  */
