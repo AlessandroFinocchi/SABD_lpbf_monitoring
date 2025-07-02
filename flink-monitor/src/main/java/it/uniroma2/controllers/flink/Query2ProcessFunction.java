@@ -6,7 +6,6 @@ import it.uniroma2.entities.query.SubTileQ2;
 import it.uniroma2.entities.query.TileQ1;
 import it.uniroma2.entities.query.TileQ2;
 import it.uniroma2.utils.MatrixMath;
-import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.state.ValueState;
@@ -27,6 +26,13 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
     }
 
     public DataStream<TileQ2> run() {
+        /*
+         * Every tile will be used in 3 (WINDOW_SIZE) windows.
+         * So, produce a unified stream in which each tile is copied 3 times but with a different value 'depth',
+         *   representing the depth that the tile will have in the corresponding window.
+         *   In the kernel implementation, the 'depth' determines which kernel is applied.
+         * In particular, in each window, the tile with 'depth' 0 has the information that has to be carried to the output.
+         *  */
         DataStream<SubTileQ2> depth0subTiles = inputStream
                 .map(new TileQ1SubTileQ2MapFunction(0));
 
@@ -41,15 +47,6 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
                 .union(depth2subTiles);
 
         DataStream<TileQ2> combinedTiles = subTiles
-                /*
-                 * Filter out those tiles which do not have enough layers to fill the window
-                 *  */
-                .filter(new FilterFunction<SubTileQ2>() {
-                    @Override
-                    public boolean filter(SubTileQ2 subTileQ2) throws Exception {
-                        return (subTileQ2.getLayerID() + subTileQ2.getDepth() >= WINDOW_SIZE - 1);
-                    }
-                }).name("Q2 Filter")
                 /*
                  * Divide the stream by a composite key, composed of:
                  *   1. layerID + depth: this combination allows combining the tiles of a layer with the same tile of previous layers,
@@ -67,9 +64,8 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
                     }
                 })
                 .process(new ApplyConvolutionKeyedProcessFunction())
-                .name("Q2 Window apply")
                 /*
-                 *
+                 * Cycle through the computed values and find the outliers.
                  *  */
                 .map(new MapFunction<SubTileQ2, TileQ2>() {
                     @Override
@@ -96,7 +92,7 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
 
                         return output;
                     }
-                }).name("Q2 Map");
+                }).name("Query2");
 
         return combinedTiles;
     }
@@ -114,10 +110,14 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
             SubTileQ2 output = new SubTileQ2(input, this.depth, null);
             if (this.depth == 0) output.setBaseValues(input.getValues());
 
-            int[][] convInput = input.getValues();
-            double[][] convKernel = new Kernel(depth, true).getValues();
-            int[][] convolutionResult = MatrixMath.convolutionPadded(convInput, convKernel);
-            output.setValues(convolutionResult);
+            if ((input.getLayerID() + this.depth) >= WINDOW_SIZE - 1) {
+                int[][] convInput = input.getValues();
+                double[][] convKernel = new Kernel(depth, true).getValues();
+                int[][] convolutionResult = MatrixMath.convolutionPadded(convInput, convKernel);
+                output.setValues(convolutionResult);
+            } else {
+                output.setValues(new int[input.getSize()][input.getSize()]);
+            }
 
             return output;
         }
@@ -137,22 +137,43 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
 
         @Override
         public void processElement(SubTileQ2 input, KeyedProcessFunction<Tuple3<Integer, Integer, String>, SubTileQ2, SubTileQ2>.Context context, Collector<SubTileQ2> collector) throws Exception {
-            if (processed.value() == null) processed.update(0);
-            processed.update(processed.value() + 1);
+            // Compute the expected tiles for each window
+            // e.g.: the first two layers will have smaller windows
+            int expectedTiles = Math.min(WINDOW_SIZE, context.getCurrentKey().f0 + 1);
 
-            if (outputValues.value() == null) {
-                outputValues.update(input.getValues());
-            } else {
-                outputValues.update(MatrixMath.addMatrix(outputValues.value(), input.getValues()));
+            // Initialize the processed variable, used to count how many tiles have been processed
+            if (processed.value() == null) {
+                processed.update(0);
             }
 
+            // If the window is big enough, then add the convoluted tiles.
+            if (expectedTiles == WINDOW_SIZE) {
+                if (processed.value() == 0) {
+                    outputValues.update(input.getValues());
+                } else {
+                    outputValues.update(MatrixMath.addMatrix(outputValues.value(), input.getValues()));
+                }
+            }
+
+            // When processing the tile with depth 0, then set it as the base tile for the output tile
             if (input.getDepth() == 0) {
                 baseTile.update(input);
             }
 
-            if (processed.value() == 3) {
+            // Increment the processed counter
+            processed.update(processed.value() + 1);
+
+            // When the window is fully processed or when the base tile has been processed for smaller windows,
+            // then collect the output and clear the state
+            if (processed.value() == expectedTiles) {
                 SubTileQ2 output = baseTile.value();
-                output.setValues(outputValues.value());
+
+                if (expectedTiles == WINDOW_SIZE) {
+                    // Take the absolute values of the differences
+                    output.setValues(MatrixMath.absMatrix(outputValues.value()));
+                } else {
+                    output.setValues(new int[output.getSize()][output.getSize()]);
+                }
                 collector.collect(output);
 
                 baseTile.clear();
