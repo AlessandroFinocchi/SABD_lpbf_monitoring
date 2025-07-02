@@ -20,6 +20,7 @@ public class RESTBatchResponse {
     public int tileId;
     public int layer;
     public byte[] tif;
+    public final double arrivalTs;
 
     @JsonCreator
     public RESTBatchResponse(
@@ -33,6 +34,7 @@ public class RESTBatchResponse {
         this.tileId = tileId;
         this.layer = layer;
         this.tif = tif;
+        this.arrivalTs = System.currentTimeMillis();
     }
 
     public int getSize() {
@@ -57,6 +59,10 @@ public class RESTBatchResponse {
 
     public byte[] getTif() {
         return tif;
+    }
+
+    public double getArrivalTs() {
+        return arrivalTs;
     }
 
     @Override

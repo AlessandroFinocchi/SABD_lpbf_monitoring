@@ -11,8 +11,8 @@ public class TileQ3 extends TileQ2 {
         return centroids;
     }
 
-    public TileQ3(int size, String printID, int seqID, int layerID, int tileID, int[][] values, int saturatedPoints, List<Outlier> outliers, List<Centroid> centroids) {
-        super(size, printID, seqID, layerID, tileID, values, saturatedPoints, outliers);
+    public TileQ3(int size, String printID, int seqID, int layerID, int tileID, int[][] values, double arrivalTs, int saturatedPoints, List<Outlier> outliers, List<Centroid> centroids) {
+        super(size, printID, seqID, layerID, tileID, values, arrivalTs, saturatedPoints, outliers);
         this.centroids = centroids;
     }
 
@@ -23,6 +23,7 @@ public class TileQ3 extends TileQ2 {
              parent.getLayerID(),
              parent.getTileID(),
              parent.getValues(),
+             parent.getArrivalTs(),
              parent.getSaturatedPoints(),
              parent.getOutliers(),
              new ArrayList<>());

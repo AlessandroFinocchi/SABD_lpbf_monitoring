@@ -1,5 +1,6 @@
 package it.uniroma2.controllers.flink;
 
+import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.matrix.Kernel;
 import it.uniroma2.entities.query.Outlier;
 import it.uniroma2.entities.query.SubTileQ2;
@@ -22,8 +23,8 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
     public static final int DEVIATION_THRESHOLD = 6000;
     public static final int WINDOW_SIZE = 3;
 
-    public Query2ProcessFunction(DataStream<TileQ1> inputStream) {
-        super(inputStream);
+    public Query2ProcessFunction(DataStream<TileQ1> inputStream, double startTs) {
+        super(inputStream, startTs);
     }
 
     public DataStream<TileQ2> run() {
@@ -94,9 +95,12 @@ public class Query2ProcessFunction extends AbstractQuery<TileQ1> {
                             }
                         }
 
+                        output.setProcessingCompletionTime(System.currentTimeMillis());
                         return output;
                     }
-                }).name("Q2 Map");
+                })
+                .map(new MetricsRichMapFunction<>("q2_pf", this.startTs))
+                .name("Query2_pf");
 
         return combinedTiles;
     }

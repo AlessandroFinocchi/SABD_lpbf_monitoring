@@ -1,18 +1,18 @@
 package it.uniroma2.entities.query;
 
+import it.uniroma2.entities.PerformanceElement;
 import it.uniroma2.utils.MatrixMath;
 
-public class Tile implements WithSeqID {
+public class Tile extends PerformanceElement {
     protected final int size;
     protected String printID;
-    protected int seqID;
     protected int layerID;
     protected int tileID;
     protected int[][] values;
 
-    public Tile(int size, String printID, int seqID, int layerID, int tileID, int[][] values) {
+    public Tile(int size, String printID, int seqID, int layerID, int tileID, int[][] values, double arrivalTs) {
+        super(seqID, arrivalTs);
         this.size = size;
-        this.seqID = seqID;
         this.printID = printID;
         this.layerID = layerID;
         this.tileID = tileID;
@@ -21,10 +21,6 @@ public class Tile implements WithSeqID {
 
     public int getSize() {
         return size;
-    }
-
-    public int getSeqID() {
-        return seqID;
     }
 
     public String getPrintID() {

@@ -4,8 +4,8 @@ public class SubTileQ2 extends TileQ1 {
     protected int depth;
     protected int[][] baseValues;
 
-    public SubTileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, int saturatedPoints, int depth, int[][] baseValues) {
-        super(size, printID, seqID, layerID, tileID, values, saturatedPoints);
+    public SubTileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, double arrivalTs, int saturatedPoints, int depth, int[][] baseValues) {
+        super(size, printID, seqID, layerID, tileID, values, arrivalTs, saturatedPoints);
         this.depth = depth;
         this.baseValues = baseValues;
     }
@@ -17,13 +17,16 @@ public class SubTileQ2 extends TileQ1 {
              parent.getLayerID(),
              parent.getTileID(),
              parent.getValues(),
+             parent.getArrivalTs(),
              parent.getSaturatedPoints(),
              depth,
              baseValues);
     }
 
     public SubTileQ2(SubTileQ2 input) {
-        this(input.getSize(), input.getPrintID(), input.getSeqID(), input.getLayerID(), input.getTileID(), input.getValues(), input.getSaturatedPoints(), input.getDepth(), input.getBaseValues());
+        this(input.getSize(), input.getPrintID(), input.getSeqID(),
+                input.getLayerID(), input.getTileID(), input.getValues(), input.getArrivalTs(),
+                input.getSaturatedPoints(), input.getDepth(), input.getBaseValues());
     }
 
     public int getDepth() {

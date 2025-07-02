@@ -8,8 +8,8 @@ public class TileQ2 extends TileQ1 {
 
     protected List<Outlier> outliers;
 
-    public TileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, int saturatedPoints, List<Outlier> outliers) {
-        super(size, printID, seqID, layerID, tileID, values, saturatedPoints);
+    public TileQ2(int size, String printID, int seqID, int layerID, int tileID, int[][] values, double arrivalTs, int saturatedPoints, List<Outlier> outliers) {
+        super(size, printID, seqID, layerID, tileID, values, arrivalTs, saturatedPoints);
         this.outliers = outliers;
     }
 
@@ -20,6 +20,7 @@ public class TileQ2 extends TileQ1 {
              input.getLayerID(),
              input.getTileID(),
              input.getValues(),
+             input.getArrivalTs(),
              input.getSaturatedPoints(),
              new ArrayList<>());
     }

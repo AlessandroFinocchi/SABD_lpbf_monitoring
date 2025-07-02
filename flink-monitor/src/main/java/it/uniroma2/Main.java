@@ -13,7 +13,6 @@ import it.uniroma2.entities.query.TileQ2;
 import it.uniroma2.entities.query.TileQ3;
 import it.uniroma2.entities.rest.RESTBatchResponse;
 import it.uniroma2.entities.rest.RESTEndResponse;
-import it.uniroma2.entities.rest.RESTPostResultResponse;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -23,13 +22,15 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         // Set up the Flink streaming environment
+        double startTs = System.currentTimeMillis();
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(16);
 
-        executeQueries(env);
+        executeQueries(env, startTs);
     }
 
-    private static void executeQueries(StreamExecutionEnvironment env) throws Exception {
+    private static void executeQueries(StreamExecutionEnvironment env, double startTs) throws Exception {
         // Get initial DataStream
         String benchId = GcRestController.getBenchId();
         RESTSource httpSource = new RESTSource(benchId);
@@ -42,11 +43,11 @@ public class Main {
                 .uid("HttpIntegerSourceUID");
 
         // Preprocess
-        Preprocess preprocess = new Preprocess(batches);
+        Preprocess preprocess = new Preprocess(batches, startTs);
         DataStream<Tile> tiles = preprocess.run();
 
         // Query 1
-        Query1 query1 = new Query1(tiles);
+        Query1 query1 = new Query1(tiles, startTs);
         DataStream<TileQ1> saturationTiles = query1.run();
 
         // saturationTiles.print();
@@ -55,10 +56,10 @@ public class Main {
 
 
         // // Query 2
-        // Query2 query2 = new Query2(saturationTiles);
-        // Query2Naive query2 = new Query2Naive(saturationTiles);
-        Query2ProcessFunction query2 = new Query2ProcessFunction(saturationTiles);
-        // Query2NaiveProcessFunction query2 = new Query2NaiveProcessFunction(saturationTiles);
+        // Query2 query2 = new Query2(saturationTiles, startTs);
+        // Query2Naive query2 = new Query2Naive(saturationTiles, startTs);
+        Query2ProcessFunction query2 = new Query2ProcessFunction(saturationTiles, startTs);
+        // Query2NaiveProcessFunction query2 = new Query2NaiveProcessFunction(saturationTiles, startTs);
         DataStream<TileQ2> outlierTiles = query2.run();
 
 //        outlierTiles.print();
@@ -67,7 +68,7 @@ public class Main {
 
 
         // // Query 3
-        Query3 query3 = new Query3(outlierTiles);
+        Query3 query3 = new Query3(outlierTiles, startTs);
         DataStream<TileQ3> centroidTiles = query3.run();
 
         centroidTiles.map(new MapFunction<TileQ3, TileQ3>() {

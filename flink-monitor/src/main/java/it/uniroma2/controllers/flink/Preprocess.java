@@ -1,19 +1,24 @@
 package it.uniroma2.controllers.flink;
 
+import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.rest.RESTBatchResponse;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
+import java.util.Comparator;
+
 public class Preprocess extends AbstractQuery<RESTBatchResponse> {
 
-    public Preprocess(DataStream<RESTBatchResponse> inputStream) {
-        super(inputStream);
+    public Preprocess(DataStream<RESTBatchResponse> inputStream, double startTs) {
+        super(inputStream, startTs);
     }
 
     // Transforms a stream of RESTBatchResponse into a stream of Tile
     public DataStream<Tile> run() {
-        return inputStream.map(new TilePreprocessMapper()).name("Preprocess");
+        return inputStream.map(new TilePreprocessMapper())
+                .map(new MetricsRichMapFunction<>("preprocess", this.startTs))
+                .name("Preprocess");
     }
 
     /*
@@ -26,14 +31,17 @@ public class Preprocess extends AbstractQuery<RESTBatchResponse> {
     private static class TilePreprocessMapper implements MapFunction<RESTBatchResponse, Tile> {
         @Override
         public Tile map(RESTBatchResponse response) throws Exception {
-            return new Tile(
+            Tile tile = new Tile(
                     response.getSize(),
                     response.getPrintId(),
                     response.getBatchId(),
                     response.getLayer(),
                     response.getTileId(),
-                    response.convertTiffToMatrix()
+                    response.convertTiffToMatrix(),
+                    response.getArrivalTs()
             );
+            tile.setProcessingCompletionTime(System.currentTimeMillis());
+            return tile;
         }
     }
 }
