@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RESTCentroid {
-    private final int x;
-    private final int y;
+    private final double x;
+    private final double y;
     private final int count;
 
     @JsonCreator
     public RESTCentroid(
-            @JsonProperty("x") int x,
-            @JsonProperty("y") int y,
+            @JsonProperty("x") double x,
+            @JsonProperty("y") double y,
             @JsonProperty("count") int count) {
         this.x = x;
         this.y = y;
@@ -27,11 +27,11 @@ public class RESTCentroid {
                 '}';
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
