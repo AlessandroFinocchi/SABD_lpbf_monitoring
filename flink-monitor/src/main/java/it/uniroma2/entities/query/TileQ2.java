@@ -49,16 +49,16 @@ public class TileQ2 extends TileQ1 {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < 5 && i < ordered.size(); i++) {
-            sb.append(String.format("(%.6f,%.6f,%d)",
+            sb.append(String.format("(%.6f %.6f %d)",
                                     ordered.get(i).getX(),
                                     ordered.get(i).getY(),
                                     ordered.get(i).getValue()));
             if (i < ordered.size() - 1) {
-                sb.append(", ");
+                sb.append(" ");
             }
         }
         sb.append("]");
-        return String.format("Q2: {printID='%s', seqID=%4d, layerID=%3d, tileID=%2d, firstOrderedOutliers=%s}",
+        return String.format("%s,%4d,%3d,%2d,%s",
                              printID, seqID, layerID, tileID, sb);
     }
 }

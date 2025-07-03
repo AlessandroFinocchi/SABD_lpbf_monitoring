@@ -53,11 +53,10 @@ public class QueryExecutor {
         Query1 query1 = new Query1(tiles, startTs, run);
         DataStream<TileQ1> saturationTiles = query1.run();
 
-        if(run != 0) {
+        if(run == 0) {
             QuerySink<TileQ1> q1sink = new QuerySink<>("q1");
             q1sink.send(saturationTiles);
         }
-
 
         // // Query 2
         // Query2 query2 = new Query2(saturationTiles, startTs, run);
@@ -66,10 +65,10 @@ public class QueryExecutor {
         // Query2NaiveProcessFunction query2 = new Query2NaiveProcessFunction(saturationTiles, startTs, run);
         DataStream<TileQ2> outlierTiles = query2.run();
 
-//        outlierTiles.print();
-        QuerySink<TileQ2> q2sink = new QuerySink<>("q2");
-        q2sink.send(outlierTiles);
-
+        if(run == 0) {
+            QuerySink<TileQ2> q2sink = new QuerySink<>("q2");
+            q2sink.send(outlierTiles);
+        }
 
         // // Query 3
         Query3 query3 = new Query3(outlierTiles, startTs, run);
@@ -83,8 +82,8 @@ public class QueryExecutor {
             }
         });
 
-        if(run != 0) {
-            QuerySink<TileQ3> q3sink = new QuerySink<>("q3run" + run);
+        if(run == 0) {
+            QuerySink<TileQ3> q3sink = new QuerySink<>("q3");
             q3sink.send(centroidTiles);
         }
 
