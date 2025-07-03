@@ -9,7 +9,7 @@ public class RESTEndResponse {
 
     @JsonProperty("count") private final String count;
     @JsonProperty("missing") private final int missing;
-    @JsonProperty("throughput") private final int throughput;
+    @JsonProperty("throughput") private final String throughput;
     @JsonProperty("latency_mean") private final String latency_mean;
     @JsonProperty("latency_min") private final String latency_min;
     @JsonProperty("latency_max") private final String latency_max;
@@ -18,7 +18,7 @@ public class RESTEndResponse {
     @JsonCreator
     public RESTEndResponse(@JsonProperty("count") String count,
                            @JsonProperty("missing") int missing,
-                           @JsonProperty("throughput") int throughput,
+                           @JsonProperty("throughput") String throughput,
                            @JsonProperty("latency_mean") String latencyMean,
                            @JsonProperty("latency_min") String latencyMin,
                            @JsonProperty("latency_max") String latencyMax,
@@ -34,6 +34,16 @@ public class RESTEndResponse {
 
     @Override
     public String toString() {
+        return String.format("%s, %s, %s, %s, %s",
+                this.throughput,
+                this.latency_min.split("ms")[0],
+                this.latency_mean.split("ms")[0],
+                this.latency_p99,
+                this.latency_max.split("ms")[0]
+                );
+    }
+
+    public String oldToString() {
         return "Challenger metrics{" +
                 "\n\tcount=" + this.count +
                 "\n\tmissing=" +this.missing +
@@ -51,7 +61,7 @@ public class RESTEndResponse {
     public int getMissing() {
         return missing;
     }
-    public int getThroughput() {
+    public String getThroughput() {
         return throughput;
     }
     public String getLatency_mean() {

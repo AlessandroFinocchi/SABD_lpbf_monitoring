@@ -18,13 +18,21 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 public class QueryExecutor {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(16);
 
-        executeQueries(env, 0);
+        try {
+            executeQueries(env, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /***
@@ -45,11 +53,11 @@ public class QueryExecutor {
                 .setParallelism(1)
                 .uid("HttpIntegerSourceUID");
 
-        // Preprocess
+        // // Preprocess
         Preprocess preprocess = new Preprocess(batches, startTs, run);
         DataStream<Tile> tiles = preprocess.run();
 
-        // Query 1
+        // // Query 1
         Query1 query1 = new Query1(tiles, startTs, run);
         DataStream<TileQ1> saturationTiles = query1.run();
 
@@ -89,8 +97,12 @@ public class QueryExecutor {
 
         env.execute("Flink L-PBF job");
 
+        // // Extract challenger metrics
         RESTEndResponse challengerMetrics = GcRestController.endBench(benchId);
-        //todo PRINT THEM
         System.out.println("Challenger metrics: " + challengerMetrics);
+        File metricsChFile = new File("metrics_challenger_run_" + run + ".csv");
+        PrintWriter out = new PrintWriter(new FileWriter(metricsChFile, true));
+        out.println(challengerMetrics.toString());
+        out.flush();
     }
 }
