@@ -1,5 +1,6 @@
 package it.uniroma2.controllers.flink;
 
+import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.matrix.Kernel;
 import it.uniroma2.entities.query.Outlier;
 import it.uniroma2.entities.query.SubTileQ2;

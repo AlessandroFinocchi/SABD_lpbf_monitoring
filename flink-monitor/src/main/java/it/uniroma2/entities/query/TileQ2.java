@@ -49,7 +49,7 @@ public class TileQ2 extends TileQ1 {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < 5 && i < ordered.size(); i++) {
-            sb.append(String.format("(%d,%d,%d)",
+            sb.append(String.format("(%.6f,%.6f,%d)",
                                     ordered.get(i).getX(),
                                     ordered.get(i).getY(),
                                     ordered.get(i).getValue()));
