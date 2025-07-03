@@ -34,7 +34,7 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         System.out.println("OPEN METRICS FOR " + this.pipelineStep);
 
         try {
-            File metricsFile = new File(String.format("metrics_%s_run_%d.csv", this.pipelineStep, this.run));
+            File metricsFile = new File(String.format("/metrics/metrics_%s_run_%d.csv", this.pipelineStep, this.run));
             FileWriter fileWriter = new FileWriter(metricsFile, true);
             writer = new PrintWriter(fileWriter);
             System.out.println("Metrics file created/opened successfully for " + this.pipelineStep +

@@ -9,7 +9,14 @@
     ```
     make gen_s TM=<num_taskmanagers>
     ```
-   
-3. Execute flink query with `make q`
 
-4. Eventually compose down docker services `make clean`
+3. Before executing the queries, make sure the directories 
+   `metrics` and `results` are empty to avoid mixing up results. 
+   If they aren't, then execute inside one of the taskmanagers
+    ```
+   rm -Rf /metrics/metrics_* && rm -Rf /results/out_q*
+    ```
+   
+4. Execute flink query with `make q`
+
+5. Eventually compose down docker services `make clean`

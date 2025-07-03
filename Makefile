@@ -5,9 +5,10 @@ PRE_GEN:
 		cd micro-challenger && unzip gc25cdocker.zip && cd ..; \
 	fi && \
 	mvn clean package && \
-	docker image load -i micro-challenger/gc25cdocker.tar
+	docker image load -i micro-challenger/gc25cdocker.tar && \
+	mkdir -p -m 777 metrics results
 
-# rm -fR metrics_* && rm -fR /results/out_q*
+# rm -Rf /metrics/metrics_* && rm -Rf /results/out_q*
 q:
 	mvn package
 	docker exec jobmanager /opt/flink/bin/flink run /flink-monitor-jar/flink-monitor-1.0-SNAPSHOT.jar

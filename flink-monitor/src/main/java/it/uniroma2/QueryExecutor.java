@@ -50,7 +50,6 @@ public class QueryExecutor {
                         WatermarkStrategy.noWatermarks(),
                         "REST-Batches-Source"
                 )
-                .setParallelism(1)
                 .uid("HttpIntegerSourceUID");
 
         // // Preprocess
@@ -100,7 +99,7 @@ public class QueryExecutor {
         // // Extract challenger metrics
         RESTEndResponse challengerMetrics = GcRestController.endBench(benchId);
         System.out.println("Challenger metrics: " + challengerMetrics);
-        File metricsChFile = new File("metrics_challenger_run_" + run + ".csv");
+        File metricsChFile = new File("/metrics/metrics_challenger_run_" + run + ".csv");
         PrintWriter out = new PrintWriter(new FileWriter(metricsChFile, true));
         out.println(challengerMetrics.toString());
         out.flush();

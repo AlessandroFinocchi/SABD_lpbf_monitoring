@@ -5,10 +5,10 @@ services:
     image: micro-challenger:latest
     ports:
       - "8866:8866"
-    volumes:
-      - ./micro-challenger/data:/data
     command: [ "0.0.0.0:8866", "/data" ]
     restart: unless-stopped
+    volumes:
+      - ./micro-challenger/data:/data
     networks: # networks to connect
       flink_network: # the name of the network
         ipv4_address: 10.0.0.9 # static ip of the container
@@ -22,10 +22,6 @@ services:
       - micro-challenger
     ports:
       - "8082:8082"
-    volumes:
-      - type: bind
-        source: ./flink-monitor/target
-        target: /flink-monitor-jar
     command: jobmanager
     environment:
       - |
@@ -35,6 +31,11 @@ services:
         rest.address: ${JOBMANAGER_REST_ADDR}
         rest.port: ${JOBMANAGER_REST_PORT}
         jobmanager.memory.process.size: ${JOBMANAGER_MEMORY}
+    volumes:
+      - type: bind
+        source: ./flink-monitor/target
+        target: /flink-monitor-jar
+      - metric_files:/metrics
     networks: # networks to connect
       flink_network: # the name of the network
         ipv4_address: 10.0.0.10 # static ip of the container
@@ -52,8 +53,25 @@ services:
         taskmanager.numberOfTaskSlots: ${TASKMANAGER_NUMBER_OF_TASK_SLOTS}
         parallelism.default: ${FLINK_PARALLELISM_DEFAULT}
         taskmanager.memory.process.size: ${TASKMANAGER_MEMORY}
+    volumes:
+      - metric_files:/metrics
+      - result_files:/results
     networks: # networks to connect
       flink_network: # the name of the network
+
+volumes:
+  metric_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: metrics
+      o: bind
+  result_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: results
+      o: bind
 
 networks:
   flink_network:
