@@ -18,16 +18,21 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class Main {
+public class QueryExecutor {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(16);
 
-        executeQueries(env);
+        executeQueries(env, 0);
     }
 
-    private static void executeQueries(StreamExecutionEnvironment env) throws Exception {
+    /***
+     * Executes the flink job
+     * @param env to execute the job
+     * @param run the number of run, if it's not equal to 0 Sinks are disabled
+     */
+    public static void executeQueries(StreamExecutionEnvironment env, int run) throws Exception {
         // Get initial DataStream
         long startTs = System.currentTimeMillis();
         String benchId = GcRestController.getBenchId();
@@ -41,32 +46,33 @@ public class Main {
                 .uid("HttpIntegerSourceUID");
 
         // Preprocess
-        Preprocess preprocess = new Preprocess(batches, startTs);
+        Preprocess preprocess = new Preprocess(batches, startTs, run);
         DataStream<Tile> tiles = preprocess.run();
 
         // Query 1
-        Query1 query1 = new Query1(tiles, startTs);
+        Query1 query1 = new Query1(tiles, startTs, run);
         DataStream<TileQ1> saturationTiles = query1.run();
 
-        // saturationTiles.print();
-//        QuerySink<TileQ1> q1sink = new QuerySink<>("q1");
-//        q1sink.send(saturationTiles);
+        if(run != 0) {
+            QuerySink<TileQ1> q1sink = new QuerySink<>("q1");
+            q1sink.send(saturationTiles);
+        }
 
 
         // // Query 2
-        // Query2 query2 = new Query2(saturationTiles, startTs);
-        // Query2Naive query2 = new Query2Naive(saturationTiles, startTs);
-        Query2ProcessFunction query2 = new Query2ProcessFunction(saturationTiles, startTs);
-        // Query2NaiveProcessFunction query2 = new Query2NaiveProcessFunction(saturationTiles, startTs);
+        // Query2 query2 = new Query2(saturationTiles, startTs, run);
+        // Query2Naive query2 = new Query2Naive(saturationTiles, startTs, run);
+        Query2ProcessFunction query2 = new Query2ProcessFunction(saturationTiles, startTs, run);
+        // Query2NaiveProcessFunction query2 = new Query2NaiveProcessFunction(saturationTiles, startTs, run);
         DataStream<TileQ2> outlierTiles = query2.run();
 
 //        outlierTiles.print();
-        QuerySink<TileQ2> q2sink = new QuerySink<>("q22");
+        QuerySink<TileQ2> q2sink = new QuerySink<>("q2");
         q2sink.send(outlierTiles);
 
 
         // // Query 3
-        Query3 query3 = new Query3(outlierTiles, startTs);
+        Query3 query3 = new Query3(outlierTiles, startTs, run);
         DataStream<TileQ3> centroidTiles = query3.run();
 
         centroidTiles.map(new MapFunction<TileQ3, TileQ3>() {
@@ -77,9 +83,10 @@ public class Main {
             }
         });
 
-//        centroidTiles.print();
-        QuerySink<TileQ3> q3sink = new QuerySink<>("q3");
-        q3sink.send(centroidTiles);
+        if(run != 0) {
+            QuerySink<TileQ3> q3sink = new QuerySink<>("q3run" + run);
+            q3sink.send(centroidTiles);
+        }
 
         env.execute("Flink L-PBF job");
 

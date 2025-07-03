@@ -10,14 +10,14 @@ import java.util.Comparator;
 
 public class Preprocess extends AbstractQuery<RESTBatchResponse> {
 
-    public Preprocess(DataStream<RESTBatchResponse> inputStream, long startTs) {
-        super(inputStream, startTs);
+    public Preprocess(DataStream<RESTBatchResponse> inputStream, long startTs, int run) {
+        super(inputStream, startTs, run);
     }
 
     // Transforms a stream of RESTBatchResponse into a stream of Tile
     public DataStream<Tile> run() {
         return inputStream.map(new TilePreprocessMapper())
-                .map(new MetricsRichMapFunction<>("preprocess", this.startTs))
+                .map(new MetricsRichMapFunction<>("preprocess", this.startTs, this.run))
                 .name("Preprocess");
     }
 

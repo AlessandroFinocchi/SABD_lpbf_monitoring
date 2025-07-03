@@ -16,8 +16,8 @@ public class Query3 extends AbstractQuery<TileQ2> {
     public static int EPS = 20;
     public static int MIN_POINTS = 4;
 
-    public Query3(DataStream<TileQ2> inputStream, long startTs) {
-        super(inputStream, startTs);
+    public Query3(DataStream<TileQ2> inputStream, long startTs, int run) {
+        super(inputStream, startTs, run);
     }
 
     public DataStream<TileQ3> run() {
@@ -59,7 +59,7 @@ public class Query3 extends AbstractQuery<TileQ2> {
                         return output;
                     }
                 })
-                .map(new MetricsRichMapFunction<>("q3", this.startTs))
+                .map(new MetricsRichMapFunction<>("q3", this.startTs, this.run))
                 .name("Query3");
     }
 }

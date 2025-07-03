@@ -13,15 +13,19 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
     private transient PrintWriter writer;
     private final String pipelineStep;
     private final long startTs;
+    private final int run;
 
     /***
      *
      * @param pipelineStep: the part of pipeline we are computing metrics for (a query, an operator, a window)
+     * @param startTs: the initial timestamp of the flink job
+     * @param run: the number of run for benchmarking
      */
-    public MetricsRichMapFunction(String pipelineStep, long startTs) {
+    public MetricsRichMapFunction(String pipelineStep, long startTs, int run) {
         super();
         this.pipelineStep = pipelineStep;
         this.startTs = startTs;
+        this.run = run;
     }
 
     @Override
@@ -30,7 +34,7 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         System.out.println("OPEN METRICS FOR " + this.pipelineStep);
 
         try {
-            File metricsFile = new File("metrics_" + this.pipelineStep + ".csv");
+            File metricsFile = new File(String.format("metrics_%s_run_%d.csv", this.pipelineStep, this.run));
             FileWriter fileWriter = new FileWriter(metricsFile, true);
             writer = new PrintWriter(fileWriter);
             System.out.println("Metrics file created/opened successfully for " + this.pipelineStep +
@@ -55,7 +59,6 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         long latency = processingCompletionTime - arrivalTs;
 
         if (writer != null) {
-            // %d,%.6f,%.6f,%.6f
             writer.println(String.format("%d, %d, %.6f, %d", (int)batchId, arrivalTsTrimmed, throughput, latency));
             writer.flush();
             System.out.println("Metrics for " + this.pipelineStep + " written to file.");

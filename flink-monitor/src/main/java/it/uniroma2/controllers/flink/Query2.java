@@ -21,8 +21,8 @@ public class Query2 extends AbstractQuery<TileQ1> {
     public static final int DEVIATION_THRESHOLD = 6000;
     public static final int WINDOW_SIZE = 3;
 
-    public Query2(DataStream<TileQ1> inputStream, long startTs) {
-        super(inputStream, startTs);
+    public Query2(DataStream<TileQ1> inputStream, long startTs, int run) {
+        super(inputStream, startTs, run);
     }
 
     public DataStream<TileQ2> run() {
@@ -127,7 +127,7 @@ public class Query2 extends AbstractQuery<TileQ1> {
                         return output;
                     }
                 })
-                .map(new MetricsRichMapFunction<>("q2", this.startTs))
+                .map(new MetricsRichMapFunction<>("q2", this.startTs, this.run))
                 .name("Query2");
 
         return combinedTiles;
