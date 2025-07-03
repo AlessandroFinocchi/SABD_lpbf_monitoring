@@ -8,13 +8,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
-    private final transient long startTs;
     private transient PrintWriter writer;
     private final String pipelineStep;
+    private final long startTs;
 
     /***
      *
@@ -51,21 +49,14 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         if (processingCompletionTime == 0) throw new RuntimeException("Value processingCompletionTime not set");
         System.out.println("Processing element #" + batchId + " for " + this.pipelineStep);
 
+        long arrivalTsTrimmed = arrivalTs - this.startTs;
         double processingInterval = processingCompletionTime - startTs;
         double throughput = 1000f * batchId / processingInterval;
         long latency = processingCompletionTime - arrivalTs;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss:SSS");
-        String startTsDate = sdf.format(new Date(this.startTs));
-        String arrivalTsDate = sdf.format(new Date(arrivalTs));
-        String processingCompletionTimeDate = sdf.format(new Date(processingCompletionTime));
-
         if (writer != null) {
             // %d,%.6f,%.6f,%.6f
-//            writer.println(String.format("%d, %d, %f, %d", (int)batchId, arrivalTs, throughput, latency));
-//            writer.println((int)batchId + "," + arrivalTs + "," + throughput + "," + latency);
-            writer.println((int)batchId +
-                    ", " + startTsDate + ", " + arrivalTsDate + ", " + processingCompletionTimeDate);
+            writer.println(String.format("%d, %d, %.6f, %d", (int)batchId, arrivalTsTrimmed, throughput, latency));
             writer.flush();
             System.out.println("Metrics for " + this.pipelineStep + " written to file.");
         }
