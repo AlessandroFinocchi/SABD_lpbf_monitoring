@@ -69,9 +69,10 @@ def main():
         with open(performance_file, "a") as f:
             if i == 0:
                 f.write("batch_id,timestamp,throughput,latency\n")  
-            timestamp = time.time()
-            throughput = i / (timestamp - start_time)
-            latency = timestamp - batch_start_time
+            now = time.time()
+            timestamp = now - start_time
+            throughput = i / (now - start_time)
+            latency = now - batch_start_time
             f.write(f"{i},{timestamp:.6f},{throughput:.6f},{latency:.6f}\n")
 
         logger.info(f"Sending batch result {i}")
