@@ -35,7 +35,7 @@ services:
       - type: bind
         source: ./flink-monitor/target
         target: /flink-monitor-jar
-      - metric_files:/metrics
+      - challenger_files:/metrics
     networks: # networks to connect
       flink_network: # the name of the network
         ipv4_address: 10.0.0.10 # static ip of the container
@@ -60,17 +60,23 @@ services:
       flink_network: # the name of the network
 
 volumes:
+  challenger_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: results/metrics
+      o: bind
   metric_files:
     driver: local
     driver_opts:
       type: none
-      device: metrics
+      device: performance_analyzer/input
       o: bind
   result_files:
     driver: local
     driver_opts:
       type: none
-      device: results
+      device: results/queries
       o: bind
 
 networks:

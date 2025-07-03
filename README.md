@@ -13,8 +13,9 @@
 3. Before executing the queries, make sure the directories 
    `metrics` and `results` are empty to avoid mixing up results. 
    If they aren't, then execute inside one of the taskmanagers
+   and the jobmanager
     ```
-   rm -Rf /metrics/metrics_* && rm -Rf /results/out_q*
+   rm -Rf /metrics/* && rm -Rf /results/*
     ```
    
 4. Execute flink query with `make q`
