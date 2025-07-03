@@ -16,7 +16,7 @@ import java.util.List;
 public class GcRestController {
     private static final String BENCH_API_TOKEN = "polimi-deib";
     private static final String BENCH_NAME = "unoptimized";
-    private static final int BENCH_LIMIT = 64;
+    private static final int BENCH_LIMIT = 256;
 //    private static final int     BENCH_LIMIT     = 3600;
     private static final boolean BENCH_TEST = false;
 
