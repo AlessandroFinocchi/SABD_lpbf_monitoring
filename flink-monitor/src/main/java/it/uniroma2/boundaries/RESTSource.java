@@ -1,12 +1,13 @@
 package it.uniroma2.boundaries;
 
-import it.uniroma2.entities.rest.RESTResponse;
+import it.uniroma2.entities.rest.RESTBatchResponse;
 import org.apache.flink.api.connector.source.*;
 import org.apache.flink.core.io.SimpleVersionedSerializer;
 
-public class RESTSource implements Source<RESTResponse, RESTSplit, Void> {
-
-    public RESTSource() {
+public class RESTSource implements Source<RESTBatchResponse, RESTSplit, Void> {
+    private final String benchId;
+    public RESTSource(String benchId) {
+        this.benchId = benchId;
     }
 
     @Override
@@ -27,8 +28,8 @@ public class RESTSource implements Source<RESTResponse, RESTSplit, Void> {
     }
 
     @Override
-    public SourceReader<RESTResponse, RESTSplit> createReader(SourceReaderContext readerContext) {
-        return new RESTSourceReader(readerContext);
+    public SourceReader<RESTBatchResponse, RESTSplit> createReader(SourceReaderContext readerContext) {
+        return new RESTSourceReader(readerContext, this.benchId);
     }
 
     @Override

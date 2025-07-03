@@ -1,7 +1,7 @@
 package it.uniroma2.boundaries;
 
 import it.uniroma2.controllers.GcRestController;
-import it.uniroma2.entities.rest.RESTResponse;
+import it.uniroma2.entities.rest.RESTBatchResponse;
 import org.apache.flink.api.connector.source.ReaderOutput;
 import org.apache.flink.api.connector.source.SourceEvent;
 import org.apache.flink.api.connector.source.SourceReader;
@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class RESTSourceReader implements SourceReader<RESTResponse, RESTSplit> {
+public class RESTSourceReader implements SourceReader<RESTBatchResponse, RESTSplit> {
 
     private final List<RESTSplit> splits = new ArrayList<>();
     private final String benchId;
 
-    public RESTSourceReader(SourceReaderContext context) {
+    public RESTSourceReader(SourceReaderContext context, String benchId) {
         try {
-            this.benchId = GcRestController.getBenchId();
+            this.benchId = benchId;
         } catch (Exception e) { throw new RuntimeException(e); }
     }
 
@@ -31,8 +31,8 @@ public class RESTSourceReader implements SourceReader<RESTResponse, RESTSplit> {
     }
 
     @Override
-    public InputStatus pollNext(ReaderOutput<RESTResponse> output) throws Exception {
-        RESTResponse batch = GcRestController.getBatch(benchId);
+    public InputStatus pollNext(ReaderOutput<RESTBatchResponse> output) throws Exception {
+        RESTBatchResponse batch = GcRestController.getBatch(benchId);
         if(batch == null) return InputStatus.END_OF_INPUT;
 
         output.collect(batch);

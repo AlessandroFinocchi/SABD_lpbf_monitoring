@@ -1,5 +1,6 @@
 package it.uniroma2.controllers.flink;
 
+import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.query.Centroid;
 import it.uniroma2.entities.query.Outlier;
 import it.uniroma2.entities.query.TileQ2;
@@ -15,8 +16,8 @@ public class Query3 extends AbstractQuery<TileQ2> {
     public static int EPS = 20;
     public static int MIN_POINTS = 4;
 
-    public Query3(DataStream<TileQ2> inputStream) {
-        super(inputStream);
+    public Query3(DataStream<TileQ2> inputStream, long startTs) {
+        super(inputStream, startTs);
     }
 
     public DataStream<TileQ3> run() {
@@ -54,8 +55,11 @@ public class Query3 extends AbstractQuery<TileQ2> {
                         // }
                         // System.out.println(sb);
 
+                        output.setProcessingCompletionTime(System.currentTimeMillis());
                         return output;
                     }
-                }).name("Query3");
+                })
+                .map(new MetricsRichMapFunction<>("q3", this.startTs))
+                .name("Query3");
     }
 }

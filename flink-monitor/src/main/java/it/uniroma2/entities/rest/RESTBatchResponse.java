@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class RESTResponse {
+public class RESTBatchResponse {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
 
@@ -20,9 +20,10 @@ public class RESTResponse {
     public int tileId;
     public int layer;
     public byte[] tif;
+    public final long arrivalTs;
 
     @JsonCreator
-    public RESTResponse(
+    public RESTBatchResponse(
             @JsonProperty("batch_id") int batchId,
             @JsonProperty("print_id") String printId,
             @JsonProperty("tile_id") int tileId,
@@ -33,6 +34,7 @@ public class RESTResponse {
         this.tileId = tileId;
         this.layer = layer;
         this.tif = tif;
+        this.arrivalTs = System.currentTimeMillis();
     }
 
     public int getSize() {
@@ -57,6 +59,10 @@ public class RESTResponse {
 
     public byte[] getTif() {
         return tif;
+    }
+
+    public long getArrivalTs() {
+        return arrivalTs;
     }
 
     @Override

@@ -1,9 +1,8 @@
 package it.uniroma2.controllers;
 
-import it.uniroma2.entities.query.WithSeqID;
+import it.uniroma2.entities.PerformanceElement;
 import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.metrics.Gauge;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -11,57 +10,55 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
-    private transient double throughput = 0;
-    private transient double latency = 0;
-    private transient long counter = 0;
-    private transient double start;
     private transient PrintWriter writer;
-    private final String pipelinePart;
+    private final String pipelineStep;
+    private final long startTs;
 
     /***
      *
-     * @param pipelinePart: the part of pipeline we are computing metrics for (a query, an operator, a window)
+     * @param pipelineStep: the part of pipeline we are computing metrics for (a query, an operator, a window)
      */
-    public MetricsRichMapFunction(String pipelinePart) {
+    public MetricsRichMapFunction(String pipelineStep, long startTs) {
         super();
-        this.pipelinePart = pipelinePart;
+        this.pipelineStep = pipelineStep;
+        this.startTs = startTs;
     }
 
     @Override
     public void open(OpenContext parameters) throws Exception {
         super.open(parameters);
-
-        System.out.println("OPEN METRICS FOR " + this.pipelinePart);
-
-        getRuntimeContext().getMetricGroup().gauge("throughput-" + this.pipelinePart, (Gauge<Double>) () -> this.throughput);
-        getRuntimeContext().getMetricGroup().gauge("latency-" + this.pipelinePart, (Gauge<Double>) () -> this.latency);
-        this.start = System.currentTimeMillis();
+        System.out.println("OPEN METRICS FOR " + this.pipelineStep);
 
         try {
-            File metricsFile = new File("metrics_" + this.pipelinePart + ".csv");
+            File metricsFile = new File("metrics_" + this.pipelineStep + ".csv");
             FileWriter fileWriter = new FileWriter(metricsFile, true);
             writer = new PrintWriter(fileWriter);
-            System.out.println("Metrics file created/opened successfully for " + this.pipelinePart +
+            System.out.println("Metrics file created/opened successfully for " + this.pipelineStep +
                     " in directory " + metricsFile.getAbsolutePath());
-        } catch (IOException e) { System.err.println("Error opening the metrics_" + this.pipelinePart +
-                ".csv file: " + e.getMessage()); }
+        } catch (IOException e) {
+            System.err.println("Error opening the metrics_" + this.pipelineStep + ".csv file: " + e.getMessage()); }
     }
 
     @Override
     public T map(T response) {
-        this.counter++;
-        double elapsed_millis = System.currentTimeMillis() - this.start;
-        double elapsed_sec = elapsed_millis / 1000;
-        this.throughput = this.counter / elapsed_sec; // tuple / s
-        this.latency = elapsed_millis / this.counter; // ms / tuple
-        int id = ((WithSeqID) response).getSeqID();
 
-        System.out.println("Processing element #" + this.counter + " for " + this.pipelinePart);
+        PerformanceElement tile = (PerformanceElement) response;
+        double batchId = tile.getSeqID();
+        long arrivalTs = tile.getArrivalTs();
+        long processingCompletionTime = tile.getProcessingCompletionTime();
+        if (processingCompletionTime == 0) throw new RuntimeException("Value processingCompletionTime not set");
+        System.out.println("Processing element #" + batchId + " for " + this.pipelineStep);
+
+        long arrivalTsTrimmed = arrivalTs - this.startTs;
+        double processingInterval = processingCompletionTime - startTs;
+        double throughput = 1000f * batchId / processingInterval;
+        long latency = processingCompletionTime - arrivalTs;
 
         if (writer != null) {
-            writer.println(id + "," + elapsed_sec + "," + this.throughput + "," + this.latency);
+            // %d,%.6f,%.6f,%.6f
+            writer.println(String.format("%d, %d, %.6f, %d", (int)batchId, arrivalTsTrimmed, throughput, latency));
             writer.flush();
-            System.out.println("Metrics for " + this.pipelinePart + " written to file.");
+            System.out.println("Metrics for " + this.pipelineStep + " written to file.");
         }
         else {
             System.out.println("Writer null");
@@ -74,7 +71,7 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
     public void close() throws Exception {
         if (writer != null) {
             writer.close();
-            System.out.println("Metrics file closed for " + this.pipelinePart);
+            System.out.println("Metrics file closed for " + this.pipelineStep);
         }
 
         super.close();
