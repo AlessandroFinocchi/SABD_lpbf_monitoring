@@ -58,14 +58,8 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         double throughput = 1000f * batchId / processingInterval;
         long latency = processingCompletionTime - arrivalTs;
 
-        if (writer != null) {
-            writer.println(String.format("%d, %d, %.6f, %d", (int)batchId, arrivalTsTrimmed, throughput, latency));
-            writer.flush();
-            System.out.println("Metrics for " + this.pipelineStep + " written to file.");
-        }
-        else {
-            System.out.println("Writer null");
-        }
+        writer.println(String.format("%d, %d, %.6f, %d", (int)batchId, arrivalTsTrimmed, throughput, latency));
+        writer.flush();
 
         return response;
     }

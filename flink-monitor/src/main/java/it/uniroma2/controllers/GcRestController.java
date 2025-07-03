@@ -16,16 +16,14 @@ import java.util.List;
 public class GcRestController {
     private static final String BENCH_API_TOKEN = "polimi-deib";
     private static final String BENCH_NAME = "unoptimized";
-    private static final int BENCH_LIMIT = 64;
-//    private static final int     BENCH_LIMIT     = 3600;
-    private static final boolean BENCH_TEST = true;
+//    private static final int BENCH_LIMIT = 64;
+    private static final int     BENCH_LIMIT     = 3600;
+    private static final boolean BENCH_TEST = false;
 
-    // private static final String URL = "http://localhost:8866";
     private static final String URL = "http://micro-challenger:8866";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_MSGPACK = "application/x-msgpack";
-    private static final String APPLICATION_STREAM = "application/octet-stream";
 
     public static synchronized String getBenchId() throws Exception {
         RESTBenchConfigRequest config = new RESTBenchConfigRequest(BENCH_API_TOKEN, BENCH_NAME, BENCH_LIMIT, BENCH_TEST);

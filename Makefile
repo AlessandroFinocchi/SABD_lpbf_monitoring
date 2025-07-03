@@ -4,7 +4,7 @@ PRE_GEN:
 	if [ ! -f "micro-challenger/gc25cdocker.tar" ]; then \
 		cd micro-challenger && unzip gc25cdocker.zip && cd ..; \
 	fi && \
-	mvn package && \
+	mvn clean package && \
 	docker image load -i micro-challenger/gc25cdocker.tar
 
 # rm -fR metrics_* && rm -fR /results/out_q*
