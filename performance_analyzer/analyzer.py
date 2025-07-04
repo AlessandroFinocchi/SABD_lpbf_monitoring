@@ -48,7 +48,7 @@ def analyze(input_file, output_file, limit=MAX_LIMIT):
 
 
 if __name__ == "__main__":
-    list_steps=["preprocess", "q1", "q2", "q2_naive", "q2_naive_pf", "q2_pf", "q3"]
+    list_steps=["preprocess", "q1", "q2", "q3"]
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     for step in list_steps:
