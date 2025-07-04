@@ -3,7 +3,7 @@ package it.uniroma2;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class QueryBenchmarker {
-    private static final int RUN_NUM = 5;
+    private static final int RUN_NUM = 20;
 
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < RUN_NUM; i++) {

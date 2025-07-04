@@ -51,7 +51,7 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         long arrivalTs = tile.getArrivalTs();
         long processingCompletionTime = tile.getProcessingCompletionTime();
         if (processingCompletionTime == 0) throw new RuntimeException("Value processingCompletionTime not set");
-        System.out.println("Processing element #" + batchId + " for " + this.pipelineStep);
+//        System.out.println("Processing element #" + batchId + " for " + this.pipelineStep);
 
         long arrivalTsTrimmed = arrivalTs - this.startTs;
         double processingInterval = processingCompletionTime - startTs;
