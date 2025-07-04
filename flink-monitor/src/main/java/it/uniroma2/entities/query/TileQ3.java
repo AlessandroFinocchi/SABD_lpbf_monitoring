@@ -38,16 +38,15 @@ public class TileQ3 extends TileQ2 {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < centroids.size(); i++) {
-            sb.append(String.format("(%.6f,%.6f,%d)",
+            sb.append(String.format("(%.6f %.6f %d)",
                                     centroids.get(i).getX(),
                                     centroids.get(i).getY(),
                                     centroids.get(i).getPoints()));
             if (i < centroids.size() - 1) {
-                sb.append(", ");
+                sb.append(" ");
             }
         }
         sb.append("]");
-        return String.format("Q3: {printID='%s', seqID=%4d, layerID=%3d, tileID=%2d, centroids=%s}",
-                             printID, seqID, layerID, tileID, sb);
+        return String.format("%s,%4d,%3d,%2d,%s", printID, seqID, layerID, tileID, sb);
     }
 }

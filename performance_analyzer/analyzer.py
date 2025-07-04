@@ -3,12 +3,13 @@ import os
 
 INPUT_DIR = "input/"
 OUTPUT_DIR = "output/"
-OUTPUT_NAME = "all.csv"
+OUTPUT_NAME = "_all.csv"
+INPUT_PREFIX = "metrics_"
 MAX_LIMIT = 3600
 
 
 def analyze(input_file, output_file, limit=MAX_LIMIT):
-    run_id = input_file.name.split("/")[-1].split(".")[0]
+    run_id = input_file.name.split("run_")[-1].split(".")[0]
     print(run_id)
 
     processed = 0
@@ -42,21 +43,26 @@ def analyze(input_file, output_file, limit=MAX_LIMIT):
     latency_p99 = sorted(latencies)[int(len(latencies) * 0.99)]
 
     output_file.write(
-        f"{run_id}, {final_throughput:.6f}, {latency_mean:.6f}, {latency_min:.6f}, {latency_max:.6f}, {latency_p99:.6f}\n"
+        f"{run_id}, {final_throughput:.6f}, {latency_min:.6f}, {latency_mean:.6f}, {latency_p99:.6f}, {latency_max:.6f}\n"
     )
 
 
 if __name__ == "__main__":
+    list_steps=["preprocess", "q1", "q2", "q2_naive", "q2_naive_pf", "q2_pf", "q3"]
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    output_file = open(OUTPUT_DIR + OUTPUT_NAME, "w")
 
-    output_file.write(
-        "run_id, final_throughput, latency_mean, latency_min, latency_max, latency_p99\n"
-    )
+    for step in list_steps:
+        step_files:list = [f for f in os.listdir(INPUT_DIR) if f.startswith(INPUT_PREFIX+step)]
+        if step_files:
+            output_file = open(OUTPUT_DIR + step + OUTPUT_NAME, "w")
 
-    for file in os.listdir(INPUT_DIR, recursive=True):
-        if file.endswith(".csv"):
-            with open(INPUT_DIR + file, "r") as input_file:
-                analyze(input_file, output_file)
+            output_file.write(
+                "run_id, final_throughput, latency_min, latency_mean, latency_p99, latency_max\n"
+            )
 
-    output_file.close()
+            for file in step_files:
+                if file.endswith(".csv"):
+                    with open(INPUT_DIR + file, "r") as input_file:
+                        analyze(input_file, output_file)
+
+            output_file.close()

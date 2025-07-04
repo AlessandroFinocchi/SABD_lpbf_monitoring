@@ -10,8 +10,8 @@ public class Query1 extends AbstractQuery<Tile> {
     public static final int EMPTY_THRESHOLD = 5000;
     public static final int SATURATION_THRESHOLD = 65000;
 
-    public Query1(DataStream<Tile> inputStream, long startTs) {
-        super(inputStream, startTs);
+    public Query1(DataStream<Tile> inputStream, long startTs, int run) {
+        super(inputStream, startTs, run);
     }
 
     /*
@@ -37,7 +37,7 @@ public class Query1 extends AbstractQuery<Tile> {
                         return output;
                     }
                 })
-                .map(new MetricsRichMapFunction<>("q1", this.startTs))
+                .map(new MetricsRichMapFunction<>("q1", this.startTs, this.run))
                 .name("Query1");
     }
 }

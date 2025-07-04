@@ -33,8 +33,7 @@ public class TileQ1 extends Tile {
 
     @Override
     public String toString() {
-        return String.format("Q1: {printID='%s', seqID=%4d, layerID=%3d, tileID=%2d, saturatedPoints=%s}",
-                                  printID, seqID, layerID, tileID, saturatedPoints);
+        return String.format("%s,%4d,%3d,%2d,%s", printID, seqID, layerID, tileID, saturatedPoints);
     }
 
 }

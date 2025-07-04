@@ -19,7 +19,7 @@ public class QuerySink<T> {
     public void send(DataStream<T> strings) {
 
         final FileSink<T> sink = FileSink
-                .forRowFormat(new Path("/results/out_"+filename), new SimpleStringEncoder<T>("UTF-8"))
+                .forRowFormat(new Path("/results/out_" + filename), new SimpleStringEncoder<T>("UTF-8"))
                 .withRollingPolicy(
                         DefaultRollingPolicy.builder()
                                 .withRolloverInterval(Duration.ofMinutes(15))
