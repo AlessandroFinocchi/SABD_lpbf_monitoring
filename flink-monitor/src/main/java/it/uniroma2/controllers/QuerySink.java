@@ -9,6 +9,8 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.
 
 import java.time.Duration;
 
+import static it.uniroma2.QueryExecutor.PARALLELISM_LEV;
+
 public class QuerySink<T> {
     private final String filename;
 
@@ -28,6 +30,6 @@ public class QuerySink<T> {
                                 .build())
                 .build();
 
-        strings.sinkTo(sink).setParallelism(1);
+        strings.sinkTo(sink).setParallelism(PARALLELISM_LEV);
     }
 }

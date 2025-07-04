@@ -55,6 +55,11 @@ public class RESTEndResponse {
                 "\n}";
     }
 
+    /***
+     *
+     * @param latency format ..m..s...ms..µs..ns
+     * @return latency in milliseconds
+     */
     public int parseLatency(String latency) {
         if(!latency.contains("ms")) return 0;
         String[] list = latency.split("ms");

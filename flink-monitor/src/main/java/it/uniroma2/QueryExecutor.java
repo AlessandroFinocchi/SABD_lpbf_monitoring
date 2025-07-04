@@ -23,10 +23,12 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 
 public class QueryExecutor {
+//    public static final int PARALLELISM_LEV = 8;
+    public static final int PARALLELISM_LEV = 16;
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(16);
+        env.setParallelism(PARALLELISM_LEV);
 
         try {
             executeQueries(env, 0);

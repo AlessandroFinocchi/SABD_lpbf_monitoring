@@ -46,20 +46,22 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
     @Override
     public T map(T response) {
 
-        PerformanceElement tile = (PerformanceElement) response;
-        double batchId = tile.getSeqID();
-        long arrivalTs = tile.getArrivalTs();
-        long processingCompletionTime = tile.getProcessingCompletionTime();
-        if (processingCompletionTime == 0) throw new RuntimeException("Value processingCompletionTime not set");
-//        System.out.println("Processing element #" + batchId + " for " + this.pipelineStep);
+        if (writer != null) {
+            PerformanceElement tile = (PerformanceElement) response;
+            double batchId = tile.getSeqID();
+            long arrivalTs = tile.getArrivalTs();
+            long processingCompletionTime = tile.getProcessingCompletionTime();
+            if (processingCompletionTime == 0) throw new RuntimeException("Value processingCompletionTime not set");
+//            System.out.println("Processing element #" + batchId + " for " + this.pipelineStep);
 
-        long arrivalTsTrimmed = arrivalTs - this.startTs;
-        double processingInterval = processingCompletionTime - startTs;
-        double throughput = 1000f * batchId / processingInterval;
-        long latency = processingCompletionTime - arrivalTs;
+            long arrivalTsTrimmed = arrivalTs - this.startTs;
+            double processingInterval = processingCompletionTime - startTs;
+            double throughput = 1000f * batchId / processingInterval;
+            long latency = processingCompletionTime - arrivalTs;
 
-        writer.println(String.format("%d, %d, %.6f, %d", (int)batchId, arrivalTsTrimmed, throughput, latency));
-        writer.flush();
+            writer.println(String.format("%d, %d, %.6f, %d", (int) batchId, arrivalTsTrimmed, throughput, latency));
+            writer.flush();
+        }
 
         return response;
     }
