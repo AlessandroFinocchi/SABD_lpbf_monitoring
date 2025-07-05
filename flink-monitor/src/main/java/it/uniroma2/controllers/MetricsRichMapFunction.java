@@ -9,6 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static it.uniroma2.entities.GeneralConfig.RESULT_METRICS_DIR;
+import static it.uniroma2.entities.GeneralConfig.RESULT_METRICS_FILENAME_PREFIX;
+
 public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
     private transient PrintWriter writer;
     private final String pipelineStep;
@@ -34,7 +37,10 @@ public class MetricsRichMapFunction<T> extends RichMapFunction<T, T> {
         System.out.println("OPEN METRICS FOR " + this.pipelineStep);
 
         try {
-            File metricsFile = new File(String.format("/metrics/metrics_%s_run_%d.csv", this.pipelineStep, this.run));
+            String metricsPath = RESULT_METRICS_DIR +
+                    RESULT_METRICS_FILENAME_PREFIX +
+                    String.format("%s_run_%d.csv", this.pipelineStep, this.run);
+            File metricsFile = new File(metricsPath);
             FileWriter fileWriter = new FileWriter(metricsFile, true);
             writer = new PrintWriter(fileWriter);
             System.out.println("Metrics file created/opened successfully for " + this.pipelineStep +

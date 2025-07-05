@@ -9,19 +9,21 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.
 
 import java.time.Duration;
 
-import static it.uniroma2.QueryExecutor.PARALLELISM_LEV;
+import static it.uniroma2.entities.GeneralConfig.*;
 
 public class QuerySink<T> {
-    private final String filename;
+    private final String filenameSuffix;
 
-    public QuerySink(String filename) {
-        this.filename = filename;
+    public QuerySink(String filenameSuffix) {
+        this.filenameSuffix = filenameSuffix;
     }
 
     public void send(DataStream<T> strings) {
 
+        final Path filePath= new Path(RESULT_QUERY_DIR + RESULT_QUERY_FILENAME_PREFIX+ this.filenameSuffix);
+
         final FileSink<T> sink = FileSink
-                .forRowFormat(new Path("/results/out_" + filename), new SimpleStringEncoder<T>("UTF-8"))
+                .forRowFormat(filePath, new SimpleStringEncoder<T>("UTF-8"))
                 .withRollingPolicy(
                         DefaultRollingPolicy.builder()
                                 .withRolloverInterval(Duration.ofMinutes(15))

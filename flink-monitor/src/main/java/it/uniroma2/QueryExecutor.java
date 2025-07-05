@@ -22,9 +22,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import static it.uniroma2.entities.GeneralConfig.*;
+
 public class QueryExecutor {
-//    public static final int PARALLELISM_LEV = 8;
-    public static final int PARALLELISM_LEV = 16;
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -101,7 +101,7 @@ public class QueryExecutor {
         // // Extract challenger metrics
         RESTEndResponse challengerMetrics = GcRestController.endBench(benchId);
         System.out.println("Challenger metrics: " + challengerMetrics);
-        File metricsChFile = new File("/metrics/metrics_challenger_run_" + run + ".csv");
+        File metricsChFile = new File(RESULT_METRICS_DIR + RESULT_METRICS_FILENAME_PREFIX + "challenger_run_" + run + ".csv");
         PrintWriter out = new PrintWriter(new FileWriter(metricsChFile, true));
         out.println(challengerMetrics.toString());
         out.flush();

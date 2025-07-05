@@ -10,12 +10,9 @@
     make gen_s TM=<num_taskmanagers>
     ```
 
-3. Before executing the queries, make sure the directories 
-   `metrics` and `results` are empty to avoid mixing up results. 
-   If they aren't, then execute inside one of the taskmanagers
-   and the jobmanager
+3. Before executing the queries, execute in local with superuser privileges:
     ```
-   rm -Rf /metrics/* && rm -Rf /results/*
+   rm -Rf results/queries/* performance_analyzer/input/* performance_analyzer/output/*
     ```
    
 4. Execute flink query with `make q`

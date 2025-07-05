@@ -6,7 +6,7 @@ PRE_GEN:
 	fi && \
 	mvn clean package && \
 	docker image load -i micro-challenger/gc25cdocker.tar && \
-	mkdir -p -m 777 results/queries results/metrics performance_analyzer/input
+	mkdir -p -m 777 results/queries performance_analyzer/input
 
 # rm -Rf /metrics/* && rm -Rf /results/*
 q:

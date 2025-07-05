@@ -13,13 +13,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GcRestController {
-    private static final String  BENCH_API_TOKEN = "polimi-deib";
-    private static final String  BENCH_NAME      = "unoptimized";
-    private static final int     BENCH_LIMIT     = 3600;
-    private static final boolean BENCH_TEST      = false;
+import static it.uniroma2.entities.GeneralConfig.*;
 
-    private static final String URL = "http://micro-challenger:8866";
+public class GcRestController {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_MSGPACK = "application/x-msgpack";
@@ -27,7 +23,7 @@ public class GcRestController {
     public static synchronized String getBenchId() throws Exception {
         RESTBenchConfigRequest config = new RESTBenchConfigRequest(BENCH_API_TOKEN, BENCH_NAME, BENCH_LIMIT, BENCH_TEST);
 
-        URL apiUrl = new URL(URL + "/api/create");
+        URL apiUrl = new URL(CHALLENGER_URL + "/api/create");
         HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
@@ -47,7 +43,7 @@ public class GcRestController {
     }
 
     public static void startBench(String benchId) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(URL + "/api/start/" + benchId).openConnection();
+        HttpURLConnection conn = (HttpURLConnection) new URL(CHALLENGER_URL + "/api/start/" + benchId).openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
 
@@ -55,7 +51,7 @@ public class GcRestController {
     }
 
     public static RESTBatchResponse getBatch(String benchId) throws IOException {
-        URL obj = new URL(URL + "/api/next_batch/" + benchId);
+        URL obj = new URL(CHALLENGER_URL + "/api/next_batch/" + benchId);
         HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty(CONTENT_TYPE, APPLICATION_MSGPACK);
@@ -88,7 +84,7 @@ public class GcRestController {
                 restCentroidList
         );
 
-        URL obj = new URL(URL + "/api/result/" + query + "/" + benchId + "/" + input.getSeqID());
+        URL obj = new URL(CHALLENGER_URL + "/api/result/" + query + "/" + benchId + "/" + input.getSeqID());
         HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty(CONTENT_TYPE, APPLICATION_MSGPACK);
@@ -117,7 +113,7 @@ public class GcRestController {
     }
 
     public static RESTEndResponse endBench(String benchId) throws Exception {
-        URL url = new URL(URL + "/api/end/" + benchId);
+        URL url = new URL(CHALLENGER_URL + "/api/end/" + benchId);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
