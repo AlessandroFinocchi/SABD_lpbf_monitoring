@@ -10,13 +10,8 @@
     make gen_s TM=<num_taskmanagers>
     ```
 
-3. Before executing the queries, execute in local with superuser privileges:
-    ```
-   rm -Rf results/queries/* performance_analyzer/input/* performance_analyzer/output/*
-    ```
+3. Execute flink query with `make q`
 
-4. Execute flink query with `make q`
+4. Benchmark flink query with `make b`
 
-5. Benchmark flink query with `make b`
-
-6. Eventually compose down docker services `make clean`
+5. Eventually compose down docker services `make clean`
