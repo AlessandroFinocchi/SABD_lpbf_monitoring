@@ -177,7 +177,7 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 <!--                                    <mainClass>it.uniroma2.QueryExecutor</mainClass>-->
-                                    <mainClass>it.uniroma2.QueryBenchmarker</mainClass>
+<!--                                    <mainClass>it.uniroma2.QueryBenchmarker</mainClass>-->
                                 </transformer>
                             </transformers>
                         </configuration>
