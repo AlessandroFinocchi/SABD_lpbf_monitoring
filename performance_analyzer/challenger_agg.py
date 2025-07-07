@@ -32,7 +32,7 @@ if __name__ == "__main__":
         output_file = open(OUTPUT_DIR + STEP + OUTPUT_NAME, "w")
 
         output_file.write(
-            "run_id, final_throughput, latency_mean, latency_min, latency_max, latency_p99\n"
+            "run_id, final_throughput, latency_min, latency_mean, latency_p99, latency_max\n"
         )
 
         for file in step_files:
