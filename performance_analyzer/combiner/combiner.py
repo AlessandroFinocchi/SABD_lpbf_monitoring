@@ -52,7 +52,6 @@ if __name__ == "__main__":
     df = pd.DataFrame(entries.values())
 
     df["key"] = df["tm"] + "_" + df["parallel"] + "_" + df["mode"]
-    df.sort_values(by=["run_id", "key", "tm", "parallel", "mode"], inplace=True)
 
     df["q1_only_latency_min"] = df["q1_latency_min"] - df["preprocess_latency_min"]
     df["q1_only_latency_mean"] = df["q1_latency_mean"] - df["preprocess_latency_mean"]
@@ -70,11 +69,11 @@ if __name__ == "__main__":
     df["q3_only_latency_max"] = df["q3_latency_max"] - df["q2_latency_max"]
 
     columns = [
-        "run_id",
         "key",
         "tm",
         "parallel",
         "mode",
+        "run_id",
         "preprocess_throughput",
         "q1_throughput",
         "q2_throughput",
@@ -113,6 +112,8 @@ if __name__ == "__main__":
         "q3_only_latency_p99",
         "q3_only_latency_max",
     ]
+
+    df.sort_values(by=["key", "run_id"], inplace=True)
 
     if os.path.exists(OUTPUT_FILE):
         os.remove(OUTPUT_FILE)
