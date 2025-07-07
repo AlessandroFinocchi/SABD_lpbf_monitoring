@@ -1,4 +1,4 @@
-package it.uniroma2.controllers.flink;
+package it.uniroma2.controllers.query;
 
 import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.query.Tile;

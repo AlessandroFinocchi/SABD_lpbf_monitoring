@@ -1,12 +1,10 @@
-package it.uniroma2.controllers.flink;
+package it.uniroma2.controllers.query;
 
 import it.uniroma2.controllers.MetricsRichMapFunction;
 import it.uniroma2.entities.query.Tile;
 import it.uniroma2.entities.rest.RESTBatchResponse;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
-
-import java.util.Comparator;
 
 public class Preprocess extends AbstractQuery<RESTBatchResponse> {
 

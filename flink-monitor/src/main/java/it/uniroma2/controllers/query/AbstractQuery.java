@@ -1,4 +1,4 @@
-package it.uniroma2.controllers.flink;
+package it.uniroma2.controllers.query;
 
 import org.apache.flink.streaming.api.datastream.DataStream;
 
