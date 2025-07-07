@@ -22,6 +22,8 @@ public class GeneralConfig {
     public static final String RESULT_METRICS_DIR;
     public static final String RESULT_METRICS_FILENAME_PREFIX;
 
+    public static final int RUN_NUM;
+
     static {
         try(InputStream in = QueryExecutor.class
                 .getClassLoader()
@@ -38,6 +40,7 @@ public class GeneralConfig {
             RESULT_QUERY_FILENAME_PREFIX = props.getProperty("result.query.filename.prefix");
             RESULT_METRICS_DIR = props.getProperty("result.metrics.directory");
             RESULT_METRICS_FILENAME_PREFIX = props.getProperty("result.metrics.filename.prefix");
+            RUN_NUM = Integer.parseInt(props.getProperty("results.metrics.run_num"));
         } catch (IOException e) {
             throw new ExceptionInInitializerError(
                     "Impossible loading " + CONFIG_FILE + ": " + e.getMessage());
