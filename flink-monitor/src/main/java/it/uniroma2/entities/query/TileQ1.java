@@ -33,7 +33,7 @@ public class TileQ1 extends Tile {
 
     @Override
     public String toString() {
-        return String.format("%s,%4d,%3d,%2d,%s", printID, seqID, layerID, tileID, saturatedPoints);
+        return String.format("%d,%s,%d,%s", seqID, printID, tileID, saturatedPoints);
     }
 
 }
