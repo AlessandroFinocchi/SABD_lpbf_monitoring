@@ -70,7 +70,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: results/queries
+      device: Results/queries
       o: bind
 
 networks:

@@ -2,8 +2,8 @@ import os
 import pandas as pd
 
 
-INPUT_DIR = "../results/metrics/metrics_raw"
-OUTPUT_DIR = "../results/metrics/metrics_agg"
+INPUT_DIR = "../Results/metrics/metrics_raw"
+OUTPUT_DIR = "../Results/metrics/metrics_agg"
 OUTPUT_NAME = "_agg.csv"
 INPUT_PREFIX = "metrics_"
 

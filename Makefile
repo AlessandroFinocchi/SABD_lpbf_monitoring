@@ -6,15 +6,15 @@ PRE_GEN:
 	fi && \
 	mvn clean package && \
 	docker image load -i micro-challenger/gc25cdocker.tar && \
-	mkdir -p -m 777 results/queries performance_analyzer/input
+	mkdir -p -m 777 Results/queries performance_analyzer/input
 
 q:
-	sudo rm -Rf results/queries/* performance_analyzer/input/* performance_analyzer/output/*
+	sudo rm -Rf Results/queries/* performance_analyzer/input/* performance_analyzer/output/*
 	mvn package
 	docker exec jobmanager /opt/flink/bin/flink run -c it.uniroma2.QueryExecutor /flink-monitor-jar/flink-monitor-1.0-SNAPSHOT.jar
 
 b:
-	sudo rm -Rf results/queries/* performance_analyzer/input/* performance_analyzer/output/*
+	sudo rm -Rf Results/queries/* performance_analyzer/input/* performance_analyzer/output/*
 	mvn package
 	docker exec jobmanager /opt/flink/bin/flink run -c it.uniroma2.QueryBenchmarker /flink-monitor-jar/flink-monitor-1.0-SNAPSHOT.jar
 
