@@ -36,7 +36,6 @@ public class TileQ3 extends TileQ2 {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
         for (int i = 0; i < centroids.size(); i++) {
             sb.append(String.format("%f,%f,%d",
                                     centroids.get(i).getX(),
@@ -46,7 +45,6 @@ public class TileQ3 extends TileQ2 {
                 sb.append(",");
             }
         }
-        sb.append("]");
         return String.format("%d,%s,%d,%s", seqID, printID, tileID, sb);
     }
 }
